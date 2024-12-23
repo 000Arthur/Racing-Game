@@ -72,33 +72,6 @@ private:
 	Texture2D texture;
 };
 
-class Box2 : public PhysicEntity
-{
-public:
-	Box2(ModulePhysics* physics, int _x, int _y, int width, int height, Module* _listener, Texture2D _texture, uint16 category, uint16 maskBits, int16 groupIndex = 0)
-		: PhysicEntity(physics->CreateRectangle(_x, _y, width, height, category, maskBits, groupIndex), _listener)
-		, texture(_texture)
-	{
-
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTexturePro(texture, Rectangle{0, 0, (float)texture.width, (float)texture.height },
-			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
-			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
-	}
-
-	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
-	{
-		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
-	}
-public:
-	Texture2D texture;
-
-};
 
 class Board : public PhysicEntity
 {
@@ -178,7 +151,7 @@ public:
 	};
 
 	Board(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 140, b2_staticBody,1), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 140, b2_staticBody,0), _listener)
 		, texture(_texture)
 	{
 		//2722 x 1466
@@ -195,17 +168,58 @@ private:
 	Texture2D texture;
 };
 
+class Bost : public PhysicEntity
+{
+public:
+	Bost(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 20, 20,id), _listener), texture(_texture){
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+	}
+
+	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
+	{
+		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
+	}
+public:
+	Texture2D texture;
+};
+
 class Bike : public Box {
 public:
 	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 24, 24, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
 	}
 };
 
-class Car : public Box2 {
+class Car : public PhysicEntity {
 public:
-	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box2(physics, _x, _y, 26, 43, _listener, _texture, PhysicCategory::CAR, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
+	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateCar(_x, _y, 26, 43,b2_dynamicBody, id), _listener), texture(_texture) {
 		
 	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+	}
+
+	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
+	{
+		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
+	}
+public:
+	Texture2D texture;
 };
 
 
@@ -227,7 +241,6 @@ bool ModuleGame::Start()
 	car = LoadTexture("Assets/Car.png");
 	greenCar = LoadTexture("Assets/Car.png");
 
-	bike = LoadTexture("Assets/Bike.png");
 	circuit = LoadTexture("Assets/HockenHaum.png");
 	circuit.width = 1280/1.3;
 	circuit.height = 720/1.2;
@@ -237,14 +250,21 @@ bool ModuleGame::Start()
 		tires[i] = LoadTexture(filename.c_str());
 	}
 
+	
+
 	board = new Board(App->physics, 0, 0, this, circuit);
-	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, greenCar);
-	player2 = new Car(App->physics, 150 + SCREEN_WIDTH * 0.25f, 100, this, car);
+	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, greenCar,1);
+	player2 = new Car(App->physics, 150 + SCREEN_WIDTH * 0.25f, 100, this, car,2);
 
 	entities.push_back(player);
-
+	int actualTire = 0;
 	for (int i = 0; i < 9; ++i) {
-		entities.push_back(new Bike(App->physics, tiresPos[i].x, tiresPos[i].y, this, tires[0]));
+		entities.push_back(new Bike(App->physics, tiresPos[i].x, tiresPos[i].y, this, tires[actualTire]));
+		if (actualTire >= 2)actualTire = 0;
+		else actualTire++;
+	}
+	for (int i = 0; i < 3; ++i) {
+		entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
 	}
 
 	return ret;
@@ -315,35 +335,65 @@ update_status ModuleGame::Update()
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y);
 
 	//Player 1 controls
-	if (IsKeyDown(KEY_W)) vel = -2.0f;
-	else if (IsKeyDown(KEY_S)) vel = 0.2f;
-	else {
-		vel = 0.0f;
-		applyFriction(player->body->body, FRICTION_COEFFICIENT);
+	if(!accelerateP1){
+		if (IsKeyDown(KEY_W)) vel = -2.0f;
+		else if (IsKeyDown(KEY_S)) vel = 0.2f;
+		else {
+			vel = 0.0f;
+			applyFriction(player->body->body, FRICTION_COEFFICIENT);
+		}
+
+		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel));
+		limitVelocity(player->body->body, MAX_VELOCITY);
+		player->body->body->ApplyForceToCenter(f, true);
 	}
+	else
+	{
+		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, 4.0f));
+		player->body->body->ApplyForceToCenter(-f, true);
+		
+		if (cnt == 50) {
+			accelerateP1 = false;
+			cnt = 0;
+		}
+		else cnt++;
+	}
+
 
 	if (IsKeyDown(KEY_A)) player->body->body->ApplyTorque(-0.2f, true);
 	else if (IsKeyDown(KEY_D)) player->body->body->ApplyTorque(0.2f, true);
 	else{
     	 r = player->body->body->GetAngularVelocity();
-		 player->body->body->ApplyTorque(-r, true);
+		 player->body->body->ApplyTorque(-r/20, true);
 	}
 
-	b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel));
-	limitVelocity(player->body->body, MAX_VELOCITY);
-	player->body->body->ApplyForceToCenter(f, true);
 	limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
 
 	//Player 2 controls
-	float maxvel = 2.0f;
-
-	if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
-	else if (IsKeyDown(KEY_DOWN)) vel2 = 2.0f;
-	else {
-		vel2 = 0.0f;
-		applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+	if (!accelerateP2)
+	{
+		if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
+		else if (IsKeyDown(KEY_DOWN)) vel2 = 2.0f;
+		else {
+			vel2 = 0.0f;
+			applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+		}
+		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
+		limitVelocity(player2->body->body, MAX_VELOCITY);
+		player2->body->body->ApplyForceToCenter(f2, true);
 	}
+	else
+	{
+		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, 4.0f));
+		player2->body->body->ApplyForceToCenter(-f2, true);
 
+		if (cnt2 == 50) {
+			accelerateP2 = false;
+			cnt2 = 0;
+		}
+		else cnt2++;
+	}
+	
 	if (IsKeyDown(KEY_LEFT)) player2->body->body->ApplyTorque(-0.2f, true);
 	else if (IsKeyDown(KEY_RIGHT)) player2->body->body->ApplyTorque(0.2f, true);
 	else{
@@ -351,9 +401,7 @@ update_status ModuleGame::Update()
 		player2->body->body->ApplyTorque(-r2, true);
 	}
 
-	b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
-	limitVelocity(player2->body->body, maxvel);
-	player2->body->body->ApplyForceToCenter(f2, true);
+	
 	limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
 
 	// ray -----------------
@@ -376,9 +424,9 @@ update_status ModuleGame::Update()
 	player->Update();
 	player2->Update();
 
-	for (int i = 1; i < 10; i++){
+	for (int i = 1; i < 13; i++){
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
-		//limitAngularVelocity(entities[i]->body->body, 0.0f);
+		limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
 	}
 	return UPDATE_CONTINUE;
@@ -387,4 +435,14 @@ update_status ModuleGame::Update()
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	
+	if (bodyA->id == 1 && bodyB->id == 3)
+	{
+		accelerateP1 = true;
+	}
+	if (bodyA->id == 2 && bodyB->id == 3)
+	{
+		accelerateP2 = true;
+	}
+	
+
 }

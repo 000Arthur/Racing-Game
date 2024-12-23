@@ -13,6 +13,7 @@ class PhysicEntity;
 class Car;
 class Bike;
 class Board;
+class Bost;
 
 
 class ModuleGame : public Module
@@ -30,6 +31,7 @@ public:
 public:
 
 	std::vector<PhysicEntity*> entities;
+	std::vector<Bost*> bosters;
 	
 	Board* board;
 
@@ -52,13 +54,17 @@ public:
 	const float FRICTION_COEFFICIENT = 0.2f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
 
-	bool accelerate = false;
+	bool accelerateP1 = false;
+	int cnt = 0;
+
+	bool accelerateP2 = false;
+	int cnt2 = 0;
 
 	Camera2D camera1 = { 0 };
 
 	Car* player;
 	Car* player2;
-
+	//Bost* impulser;
 	Bike* cono;
 
 	vec2<int> ray;
@@ -74,5 +80,11 @@ public:
 		{550, 583},
 		{579, 596},
 		{597, 606}
+	};
+
+	std::vector<Vector2> BostersPos = {
+	{563, 300},
+	{178, 960},
+	{1283, 726}
 	};
 };

@@ -132,7 +132,35 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, ui
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height)
+PhysBody* ModulePhysics::CreateCar(int x, int y, int width, int height, b2BodyType bType, int inf)
+{
+	PhysBody* pbody = new PhysBody();
+
+	b2BodyDef body;
+	body.type = bType;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+
+	b2Body* b = world->CreateBody(&body);
+	b2PolygonShape box;
+	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+
+	b->CreateFixture(&fixture);
+
+	pbody->id = inf;
+	pbody->body = b;
+	pbody->width = (int)(width * 0.5f);
+	pbody->height = (int)(height * 0.5f);
+
+	return pbody;
+}
+
+
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, int inf)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -156,6 +184,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	pbody->body = b;
 	pbody->width = width;
 	pbody->height = height;
+	pbody->id = inf;
 
 	return pbody;
 }
