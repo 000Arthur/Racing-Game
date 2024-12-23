@@ -4,6 +4,7 @@
 #include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include <string>
 
 // TODO 1: Create an enum to represent physics categories for collision detection
 enum PhysicCategory
@@ -85,7 +86,7 @@ public:
 	{
 		int x, y;
 		body->GetPhysicPosition(x, y);
-		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+		DrawTexturePro(texture, Rectangle{0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
 	}
@@ -94,14 +95,15 @@ public:
 	{
 		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
 	}
-private:
+public:
 	Texture2D texture;
+
 };
 
 class Board : public PhysicEntity
 {
 public:
-	static constexpr int board_circuit[84] =
+	static constexpr int board_circuit[140] =
 	{
 		352, 618,
 		334, 635,
@@ -144,11 +146,39 @@ public:
 		657, 690,
 		646, 666,
 		629, 638,
-		613, 618
+		613, 618,
+		615, 612,
+		640, 644,
+		662, 683,
+		668, 846,
+		692, 871,
+		1032, 871,
+		1093, 820,
+		1092, 809,
+		1071, 799,
+		1047, 782,
+		766, 464,
+		754, 446,
+		753, 386,
+		743, 374,
+		453, 372,
+		430, 380,
+		281, 546,
+		274, 559,
+		270, 592,
+		269, 756,
+		274, 772,
+		283, 771,
+		295, 757,
+		296, 733,
+		299, 703,
+		307, 671,
+		320, 646,
+		334, 624
 	};
 
 	Board(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 84, b2_staticBody,1), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 140, b2_staticBody,1), _listener)
 		, texture(_texture)
 	{
 		//2722 x 1466
@@ -167,7 +197,7 @@ private:
 
 class Bike : public Box {
 public:
-	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 18, 35, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
+	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 24, 24, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
 	}
 };
 
@@ -195,21 +225,26 @@ bool ModuleGame::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	car = LoadTexture("Assets/Car.png");
+	greenCar = LoadTexture("Assets/Car.png");
 
 	bike = LoadTexture("Assets/Bike.png");
 	circuit = LoadTexture("Assets/HockenHaum.png");
 	circuit.width = 1280/1.3;
 	circuit.height = 720/1.2;
 
-	board = new Board(App->physics, 0, 0, this, circuit);
+	for (int i = 0; i < 3; ++i) {
+		std::string filename = "Assets/Tire" + std::to_string(i+1) + ".png";
+		tires[i] = LoadTexture(filename.c_str());
+	}
 
-	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, car);
+	board = new Board(App->physics, 0, 0, this, circuit);
+	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, greenCar);
 	player2 = new Car(App->physics, 150 + SCREEN_WIDTH * 0.25f, 100, this, car);
 
 	entities.push_back(player);
-	cono = new Bike(App->physics, 10,10, this, bike);
-	for (int i = 0; i < 6; ++i) {
-		entities.push_back(new Bike(App->physics, i * 1000 + SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f, this, bike));
+
+	for (int i = 0; i < 9; ++i) {
+		entities.push_back(new Bike(App->physics, tiresPos[i].x, tiresPos[i].y, this, tires[0]));
 	}
 
 	return ret;
@@ -273,17 +308,15 @@ update_status ModuleGame::Update()
 	mouse.x = GetMouseX();
 	mouse.y = GetMouseY();
 	int ray_hit = ray.DistanceTo(mouse);
-	double r;
-
-	double r2;
+	double r, r2;
 	vec2f normal(0.0f, 0.0f);
-	b2Vec2 novel(0.0f, 0.0f);
 	b2Vec2 playervel = player->body->body->GetLinearVelocity();
 
-	if (IsKeyPressed(KEY_A)) printf("%d, %d, \n", mouse.x, mouse.y);
+	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y);
+
 	//Player 1 controls
 	if (IsKeyDown(KEY_W)) vel = -2.0f;
-	else if (IsKeyDown(KEY_S)) vel = 2.0f;
+	else if (IsKeyDown(KEY_S)) vel = 0.2f;
 	else {
 		vel = 0.0f;
 		applyFriction(player->body->body, FRICTION_COEFFICIENT);
@@ -302,6 +335,8 @@ update_status ModuleGame::Update()
 	limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
 
 	//Player 2 controls
+	float maxvel = 2.0f;
+
 	if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
 	else if (IsKeyDown(KEY_DOWN)) vel2 = 2.0f;
 	else {
@@ -317,10 +352,11 @@ update_status ModuleGame::Update()
 	}
 
 	b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
-	limitVelocity(player2->body->body, MAX_VELOCITY);
+	limitVelocity(player2->body->body, maxvel);
 	player2->body->body->ApplyForceToCenter(f2, true);
 	limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
 
+	// ray -----------------
 	for (PhysicEntity* entity : entities){
 		entity->Update();
 		if (ray_on){
@@ -329,21 +365,21 @@ update_status ModuleGame::Update()
 		}
 	}
 
-	// ray -----------------
 	if(ray_on == true){
 		vec2f destination((float)(mouse.x-ray.x), (float)(mouse.y-ray.y));
 		destination.Normalize();
 		destination *= (float)ray_hit;
 	}
 
+	//UPDATE---------------------
 	board->Update();
 	player->Update();
 	player2->Update();
-	b2Vec2 enmyPos;
 
-	for (int i = 0; i < 7; i++){
+	for (int i = 1; i < 10; i++){
+		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
+		//limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
-		enmyPos = entities[i]->body->body->GetPosition();
 	}
 	return UPDATE_CONTINUE;
 }

@@ -34,8 +34,17 @@ public:
 	Board* board;
 
 	Texture2D car;
+	Texture2D greenCar;
+	Texture2D tires[3];
+
 	Texture2D bike;
 	Texture2D circuit;
+
+	int currentFrame = 0;
+	float frameTime = 0.15f;   // Duración de cada frame en segundos
+	float timer = 0.0f;
+	Texture2D frames[8];
+
 	float vel = 0.0f;
 	float vel2 = 0.0f;
 
@@ -54,4 +63,16 @@ public:
 
 	vec2<int> ray;
 	bool ray_on;
+
+	std::vector<Vector2> tiresPos = {
+		{365, 604},
+		{383, 592},
+		{414, 578},
+		{451, 570},
+		{478, 570},
+		{517, 571},
+		{550, 583},
+		{579, 596},
+		{597, 606}
+	};
 };
