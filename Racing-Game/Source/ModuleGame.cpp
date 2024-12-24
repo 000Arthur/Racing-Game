@@ -173,7 +173,6 @@ class FinishLine : public PhysicEntity {
 public:
 	FinishLine(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
 		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 126, 17, id), _listener) {
-		body->id = 7;
 
 	}
 
@@ -302,7 +301,8 @@ bool ModuleGame::Start()
 		if (i<3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
 		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[2], 4));// poner enum y no 3
 	}
-	entities.push_back(new FinishLine(App->physics, 193, 686, this, tires[1], 3));
+	entities.push_back(new FinishLine(App->physics, 193, 686, this, tires[1], 7));
+	entities.push_back(new FinishLine(App->physics, 193, 900, this, tires[1], 8));
 	return ret;
 }
 
@@ -528,10 +528,30 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		}
 
-		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 7))
+		if ((bodyA->id == 1) && (bodyB->id == 7) && check)
 		{
+			
 			App->audio->PlayFx(App->audio->finish_line_fx);
+			check = false;
 
+		}
+
+		if ((bodyA->id == 2) && (bodyB->id == 7) && check_2)
+		{
+
+			App->audio->PlayFx(App->audio->finish_line_fx);
+			check_2 = false;
+
+		}
+
+		if ((bodyA->id == 1) && (bodyB->id == 8))
+		{
+			check=true;
+		}
+		
+		if ((bodyA->id == 2) && (bodyB->id == 8))
+		{
+			check_2 = true;
 		}
 	}
 }

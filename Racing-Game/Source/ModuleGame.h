@@ -59,6 +59,8 @@ public:
 	int rectY = 100; // Posición Y
 	int rectHeight = 20; // Altura del rectángulo
 
+	bool check = false;
+	bool check_2 = false;
 	Camera2D camera1 = { 0 };
 
 	Car* player;
