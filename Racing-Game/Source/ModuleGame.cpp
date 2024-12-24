@@ -250,8 +250,9 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	App->audio->SoundsFx();
-
+	App->audio->PlayMusic("Assets/Audio/Music/gym-phonk-187854.mp3", 1.0f);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
+
 
 	car = LoadTexture("Assets/Car2.png");
 	greenCar = LoadTexture("Assets/Car1.png");
@@ -338,6 +339,7 @@ void applyFriction(b2Body* body, float frictionCoefficient) {
 // Update: draw background
 update_status ModuleGame::Update()
 {
+
 	vec2i mouse;
 	mouse.x = GetMouseX();
 	mouse.y = GetMouseY();
@@ -346,8 +348,12 @@ update_status ModuleGame::Update()
 	vec2f normal(0.0f, 0.0f);
 	b2Vec2 playervel = player->body->body->GetLinearVelocity();
 
+	App->audio->UpdateMusic();
+
+
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y);
 
+	
 	//Player 1 controls
 	if(!player->accelerate){
 		if (IsKeyPressed(KEY_SPACE) && player->BOOST_QUANTITY > 0)
@@ -364,8 +370,15 @@ update_status ModuleGame::Update()
 		{
 			App->audio->StopFx(App->audio->accelerate_fx);
 
-			if (IsKeyDown(KEY_W)) vel = -2.0f;
-			else if (IsKeyDown(KEY_S)) vel = 0.2f;
+			if (IsKeyDown(KEY_W)) {
+				App->audio->StopFx(App->audio->in_Reverse_fx);
+				vel = -2.0f; 
+			}
+			else if (IsKeyDown(KEY_S)) {
+				App->audio->PlayFx(App->audio->in_Reverse_fx);
+
+				vel = 0.2f;
+			}
 			else {
 				vel = 0.0f;
 				applyFriction(player->body->body, FRICTION_COEFFICIENT);
@@ -398,6 +411,7 @@ update_status ModuleGame::Update()
 
 	limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
 
+
 	//Player 2 controls
 	if (!player2->accelerate)
 	{
@@ -415,8 +429,16 @@ update_status ModuleGame::Update()
 		{
 			App->audio->StopFx(App->audio->accelerate_fx_2);
 
-			if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
-			else if (IsKeyDown(KEY_DOWN)) vel2 = 0.2f;
+			if (IsKeyDown(KEY_UP)) {
+				App->audio->StopFx(App->audio->in_Reverse_fx_2);
+
+				vel2 = -2.0f;
+			}
+			else if (IsKeyDown(KEY_DOWN)) {
+				App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+
+				vel2 = 0.2f; 
+			}
 			else {
 				vel2 = 0.0f;
 				applyFriction(player2->body->body, FRICTION_COEFFICIENT);

@@ -29,6 +29,14 @@ bool ModuleAudio::Init()
 	return ret;
 }
 
+void ModuleAudio::UpdateMusic()
+{
+	if (IsMusicReady(music)) {
+		UpdateMusicStream(music);
+	}
+}
+
+
 // Called before quitting
 bool ModuleAudio::CleanUp()
 {
@@ -58,16 +66,20 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	if(IsEnabled() == false)
 		return false;
 
-	bool ret = true;
-	
-    StopMusicStream(music);
-    music = LoadMusicStream(path);
-    
-    PlayMusicStream(music);
+	if (IsMusicReady(music)) {
+		StopMusicStream(music);
+		UnloadMusicStream(music);
+	}
 
-	LOG("Successfully playing %s", path);
+	music = LoadMusicStream(path);
+	if (IsMusicReady(music))
+	{
+		PlayMusicStream(music);
+		LOG("Successfully playing %s", path);
+		SetMusicVolume(music,0.3f); 
+	}
+	return true;
 
-	return ret;
 }
 
 // Load WAV
@@ -123,5 +135,11 @@ void ModuleAudio::SoundsFx()
 	collision_cars_fx = LoadFx("Assets/Audio/Fx/car-crash.mp3");
 
 	collision_object_fx = LoadFx("Assets/Audio/Fx/crash.mp3");
+
+	start_engines_fx = LoadFx("Assets/Audio/Fx/start engines.mp3");
+	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/start engines.mp3");
+
+	in_Reverse_fx = LoadFx("Assets/Audio/Fx/Reverse.mp3");
+	in_Reverse_fx_2 = LoadFx("Assets/Audio/Fx/Reverse.mp3");
 
 }

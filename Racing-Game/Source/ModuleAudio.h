@@ -26,6 +26,7 @@ public:
 
 	void StopFx(unsigned int fx_id);
 	void SoundsFx();
+	void UpdateMusic();
 
 	unsigned int accelerate_fx;
 	unsigned int accelerate_fx_2;
@@ -33,8 +34,14 @@ public:
 	unsigned int collision_cars_fx;
 	unsigned int collision_object_fx;
 
-private:
+	unsigned int start_engines_fx;
+	unsigned int start_engines_fx_2;
 
+	unsigned int in_Reverse_fx;
+	unsigned int in_Reverse_fx_2;
+
+
+private:
 	Music music;
 	Sound fx[MAX_SOUNDS];
     unsigned int fx_count;
