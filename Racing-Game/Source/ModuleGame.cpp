@@ -154,6 +154,7 @@ public:
 		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 140, b2_staticBody,0), _listener)
 		, texture(_texture)
 	{
+		body->id = 5;
 		//2722 x 1466
 	}
 
@@ -182,11 +183,14 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+
 	}
 
 	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
 	{
+
 		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
+
 	}
 public:
 	Texture2D texture;
@@ -195,6 +199,7 @@ public:
 class Bike : public Box {
 public:
 	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 24, 24, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
+		body->id = 6;
 	}
 };
 
@@ -484,6 +489,18 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyA->id == 2 && bodyB->id == 4)
 			if (player2->BOOST_QUANTITY < 10.0f)player2->BOOST_QUANTITY = 10.0f;
+
+		// Detect collision between cars or a wall:
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 1 || bodyB->id == 2 || bodyB->id == 5))
+		{
+			App->audio->PlayFx(App->audio->collision_cars_fx);
+		}
+		
+		//Check if a car collides with a wheels wall
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 6))
+		{
+			App->audio->PlayFx(App->audio->collision_object_fx);
+		}
 
 	}
 }

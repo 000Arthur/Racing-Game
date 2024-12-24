@@ -30,6 +30,9 @@ public:
 	unsigned int accelerate_fx;
 	unsigned int accelerate_fx_2;
 
+	unsigned int collision_cars_fx;
+	unsigned int collision_object_fx;
+
 private:
 
 	Music music;

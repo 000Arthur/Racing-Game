@@ -119,4 +119,9 @@ void ModuleAudio::SoundsFx()
 	accelerate_fx = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 
+
+	collision_cars_fx = LoadFx("Assets/Audio/Fx/car-crash.mp3");
+
+	collision_object_fx = LoadFx("Assets/Audio/Fx/crash.mp3");
+
 }
