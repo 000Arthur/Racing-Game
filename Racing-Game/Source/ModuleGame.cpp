@@ -266,8 +266,8 @@ bool ModuleGame::Start()
 	}
 
 	board = new Board(App->physics, 0, 0, this, circuit);
-	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, greenCar,1);
-	player2 = new Car(App->physics, 150 + SCREEN_WIDTH * 0.25f, 100, this, car,2);
+	player = new Car(App->physics, 210, 730, this, greenCar,1);
+	player2 = new Car(App->physics, 174, 750, this, car,2);
 
 	entities.push_back(player);
 	int actualTire = 0;
@@ -448,27 +448,19 @@ update_status ModuleGame::Update()
 	
 	limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
 
-	// ray -----------------
-	for (PhysicEntity* entity : entities){
-		entity->Update();
-		if (ray_on){
-			int hit = entity->RayHit(ray, mouse, normal);
-			if (hit >= 0)ray_hit = hit;
-		}
-	}
-
-	if(ray_on == true){
-		vec2f destination((float)(mouse.x-ray.x), (float)(mouse.y-ray.y));
-		destination.Normalize();
-		destination *= (float)ray_hit;
-	}
 
 	//UPDATE---------------------
 	board->Update();
 	player->Update();
 	player2->Update();
 
-	for (int i = 1; i < 16; i++){
+	int rectWidth = player->BOOST_QUANTITY*20; // Ancho del rectángulo
+	DrawRectangle(rectX, rectY, rectWidth, rectHeight, RED);
+
+	rectWidth = player2->BOOST_QUANTITY * 20; // Ancho del rectángulo
+	DrawRectangle(rectX+1200, rectY, rectWidth, rectHeight, BLUE);
+
+	for (int i = 1; i < entitieQ; i++){
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
 		limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
@@ -484,9 +476,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA->id == 2 && bodyB->id == 3) player2->accelerate = true;
 
 		if (bodyA->id == 1 && bodyB->id == 4)
-			if(player->BOOST_QUANTITY <10.0f)player->BOOST_QUANTITY = 10.0f;
+			if (player->BOOST_QUANTITY < 10.0f)player->BOOST_QUANTITY = 10.0f;
 		
-
 		if (bodyA->id == 2 && bodyB->id == 4)
 			if (player2->BOOST_QUANTITY < 10.0f)player2->BOOST_QUANTITY = 10.0f;
 
@@ -500,7 +491,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 6))
 		{
 			App->audio->PlayFx(App->audio->collision_object_fx);
-		}
 
+		}
 	}
 }

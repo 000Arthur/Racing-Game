@@ -56,6 +56,10 @@ public:
 
 	unsigned int accelerate_fx_id = 0;
 
+	int rectX = 200; // Posición X
+	int rectY = 100; // Posición Y
+	int rectHeight = 20; // Altura del rectángulo
+
 	Camera2D camera1 = { 0 };
 
 	Car* player;
@@ -65,25 +69,28 @@ public:
 
 	vec2<int> ray;
 	bool ray_on;
+	int entitieQ = 16;
 
 	std::vector<Vector2> tiresPos = {
-	{365, 604},
-	{383, 592},
-	{414, 578},
-	{451, 570},
-	{478, 570},
-	{517, 571},
-	{550, 583},
-	{579, 596},
-	{597, 606}
+
+		{365, 604},
+		{383, 592},
+		{414, 578},
+		{451, 570},
+		{478, 570},
+		{517, 571},
+		{550, 583},
+		{579, 596},
+		{597, 606}
+
 	};
 
 	std::vector<Vector2> BostersPos = {
-	{563, 300},
-	{178, 960},
-	{1283, 726},
-	{964, 564},
-	{479, 608},
-	{1631, 991}
+		{563, 300},
+		{178, 960},
+		{1283, 726},
+		{964, 564},
+		{479, 608},
+		{1631, 991}
 	};
 };
