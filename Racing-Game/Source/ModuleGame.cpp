@@ -370,19 +370,14 @@ update_status ModuleGame::Update()
 		{
 			App->audio->StopFx(App->audio->accelerate_fx);
 
-			if (IsKeyDown(KEY_W)) {
-				App->audio->StopFx(App->audio->in_Reverse_fx);
-				vel = -2.0f; 
-			}
-			else if (IsKeyDown(KEY_S)) {
-				App->audio->PlayFx(App->audio->in_Reverse_fx);
-
-				vel = 0.2f;
-			}
+			if (IsKeyDown(KEY_W)) vel = -2.0f;
+			else if (IsKeyDown(KEY_S)) vel = 0.2f;
 			else {
 				vel = 0.0f;
 				applyFriction(player->body->body, FRICTION_COEFFICIENT);
 			}
+			if (IsKeyPressed(KEY_W)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
+			else if (IsKeyPressed(KEY_S))App->audio->PlayFx(App->audio->in_Reverse_fx_2);
 			limitVelocity(player->body->body, MAX_VELOCITY);
 		}
 
@@ -429,20 +424,15 @@ update_status ModuleGame::Update()
 		{
 			App->audio->StopFx(App->audio->accelerate_fx_2);
 
-			if (IsKeyDown(KEY_UP)) {
-				App->audio->StopFx(App->audio->in_Reverse_fx_2);
-
-				vel2 = -2.0f;
-			}
-			else if (IsKeyDown(KEY_DOWN)) {
-				App->audio->PlayFx(App->audio->in_Reverse_fx_2);
-
-				vel2 = 0.2f; 
-			}
+			if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
+			else if (IsKeyDown(KEY_DOWN)) vel2 = 0.2f;
 			else {
 				vel2 = 0.0f;
 				applyFriction(player2->body->body, FRICTION_COEFFICIENT);
 			}
+			if (IsKeyPressed(KEY_UP)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
+			else if (IsKeyPressed(KEY_DOWN))App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+
 			limitVelocity(player2->body->body, MAX_VELOCITY);
 		}
 		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
