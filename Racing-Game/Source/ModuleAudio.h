@@ -24,6 +24,12 @@ public:
 	// Play a previously loaded sound
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
+	void StopFx(unsigned int fx_id);
+	void SoundsFx();
+
+	unsigned int accelerate_fx;
+	unsigned int accelerate_fx_2;
+
 private:
 
 	Music music;

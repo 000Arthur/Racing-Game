@@ -107,3 +107,16 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat)
 
 	return ret;
 }
+void ModuleAudio::StopFx(unsigned int fx_id)
+{
+	if (fx_id < fx_count) {
+		StopSound(fx[fx_id]); 
+	}
+}
+
+void ModuleAudio::SoundsFx()
+{
+	accelerate_fx = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
+	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
+
+}

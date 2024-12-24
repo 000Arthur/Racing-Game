@@ -54,6 +54,8 @@ public:
 	const float FRICTION_COEFFICIENT = 0.1f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
 
+	unsigned int accelerate_fx_id = 0;
+
 	Camera2D camera1 = { 0 };
 
 	Car* player;

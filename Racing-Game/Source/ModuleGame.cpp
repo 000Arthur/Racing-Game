@@ -244,6 +244,8 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
+	App->audio->SoundsFx();
+
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	car = LoadTexture("Assets/Car2.png");
@@ -343,6 +345,10 @@ update_status ModuleGame::Update()
 
 	//Player 1 controls
 	if(!player->accelerate){
+		if (IsKeyPressed(KEY_SPACE) && player->BOOST_QUANTITY > 0)
+		{
+			App->audio->PlayFx(App->audio->accelerate_fx);
+		}
 		if (IsKeyDown(KEY_SPACE)&& player->BOOST_QUANTITY > 0)
 		{
 			vel = -2.0f * player->BOOST;
@@ -351,6 +357,8 @@ update_status ModuleGame::Update()
 		}
 		else
 		{
+			App->audio->StopFx(App->audio->accelerate_fx);
+
 			if (IsKeyDown(KEY_W)) vel = -2.0f;
 			else if (IsKeyDown(KEY_S)) vel = 0.2f;
 			else {
@@ -388,6 +396,10 @@ update_status ModuleGame::Update()
 	//Player 2 controls
 	if (!player2->accelerate)
 	{
+		if (IsKeyPressed(KEY_RIGHT_SHIFT) && player->BOOST_QUANTITY > 0)
+		{
+			App->audio->PlayFx(App->audio->accelerate_fx_2);
+		}
 		if (IsKeyDown(KEY_RIGHT_SHIFT)&& player2->BOOST_QUANTITY > 0)
 		{
 			vel2 = -2.0f * player2->BOOST;
@@ -396,6 +408,8 @@ update_status ModuleGame::Update()
 		}
 		else
 		{
+			App->audio->StopFx(App->audio->accelerate_fx_2);
+
 			if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
 			else if (IsKeyDown(KEY_DOWN)) vel2 = 0.2f;
 			else {
@@ -461,7 +475,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	if (bodyA != nullptr && bodyB != nullptr)
 	{ 
-		if (bodyA->id == 1 && bodyB->id == 3) player->accelerate = true;
+		if (bodyA->id == 1 && bodyB->id == 3) player->accelerate = true; 
 		if (bodyA->id == 2 && bodyB->id == 3) player2->accelerate = true;
 
 		if (bodyA->id == 1 && bodyB->id == 4)
