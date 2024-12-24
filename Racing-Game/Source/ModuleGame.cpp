@@ -201,7 +201,7 @@ public:
 class Car : public PhysicEntity {
 public:
 	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
-		: PhysicEntity(physics->CreateCar(_x, _y, 26, 43,b2_dynamicBody, id), _listener), texture(_texture) {
+		: PhysicEntity(physics->CreateCar(_x, _y, 15, 28,b2_dynamicBody, id), _listener), texture(_texture) {
 		
 	}
 
@@ -220,6 +220,14 @@ public:
 	}
 public:
 	Texture2D texture;
+
+	float BOOST = 3.0F;
+	float BOOST_QUANTITY = 20.0F;
+	float BOOST_COLDDOWN = 100.0F;
+	float BOOST_CNT = 0.0F;
+
+	bool accelerate = false;
+	int cnt = 0;
 };
 
 
@@ -238,8 +246,8 @@ bool ModuleGame::Start()
 	bool ret = true;
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	car = LoadTexture("Assets/Car.png");
-	greenCar = LoadTexture("Assets/Car.png");
+	car = LoadTexture("Assets/Car2.png");
+	greenCar = LoadTexture("Assets/Car1.png");
 
 	circuit = LoadTexture("Assets/HockenHaum.png");
 	circuit.width = 1280/1.3;
@@ -249,8 +257,6 @@ bool ModuleGame::Start()
 		std::string filename = "Assets/Tire" + std::to_string(i+1) + ".png";
 		tires[i] = LoadTexture(filename.c_str());
 	}
-
-	
 
 	board = new Board(App->physics, 0, 0, this, circuit);
 	player = new Car(App->physics, 100 + SCREEN_WIDTH * 0.25f, 100, this, greenCar,1);
@@ -263,8 +269,9 @@ bool ModuleGame::Start()
 		if (actualTire >= 2)actualTire = 0;
 		else actualTire++;
 	}
-	for (int i = 0; i < 3; ++i) {
-		entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
+	for (int i = 0; i < 6; ++i) {
+		if (i<3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
+		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[2], 4));// poner enum y no 3
 	}
 
 	return ret;
@@ -335,28 +342,37 @@ update_status ModuleGame::Update()
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y);
 
 	//Player 1 controls
-	if(!accelerateP1){
-		if (IsKeyDown(KEY_W)) vel = -2.0f;
-		else if (IsKeyDown(KEY_S)) vel = 0.2f;
-		else {
-			vel = 0.0f;
-			applyFriction(player->body->body, FRICTION_COEFFICIENT);
+	if(!player->accelerate){
+		if (IsKeyDown(KEY_SPACE)&& player->BOOST_QUANTITY > 0)
+		{
+			vel = -2.0f * player->BOOST;
+			player->BOOST_QUANTITY -= 0.1f;
+			limitVelocity(player->body->body, MAX_VELOCITY + player->BOOST);
+		}
+		else
+		{
+			if (IsKeyDown(KEY_W)) vel = -2.0f;
+			else if (IsKeyDown(KEY_S)) vel = 0.2f;
+			else {
+				vel = 0.0f;
+				applyFriction(player->body->body, FRICTION_COEFFICIENT);
+			}
+			limitVelocity(player->body->body, MAX_VELOCITY);
 		}
 
 		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel));
-		limitVelocity(player->body->body, MAX_VELOCITY);
 		player->body->body->ApplyForceToCenter(f, true);
 	}
 	else
 	{
-		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, 4.0f));
+		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 		player->body->body->ApplyForceToCenter(-f, true);
 		
-		if (cnt == 50) {
-			accelerateP1 = false;
-			cnt = 0;
+		if (player->cnt == 50) {
+			player->accelerate = false;
+			player->cnt = 0;
 		}
-		else cnt++;
+		else player->cnt++;
 	}
 
 
@@ -364,41 +380,50 @@ update_status ModuleGame::Update()
 	else if (IsKeyDown(KEY_D)) player->body->body->ApplyTorque(0.2f, true);
 	else{
     	 r = player->body->body->GetAngularVelocity();
-		 player->body->body->ApplyTorque(-r/20, true);
+		 player->body->body->ApplyTorque(-r/100, true);
 	}
 
 	limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
 
 	//Player 2 controls
-	if (!accelerateP2)
+	if (!player2->accelerate)
 	{
-		if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
-		else if (IsKeyDown(KEY_DOWN)) vel2 = 2.0f;
-		else {
-			vel2 = 0.0f;
-			applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+		if (IsKeyDown(KEY_RIGHT_SHIFT)&& player2->BOOST_QUANTITY > 0)
+		{
+			vel2 = -2.0f * player2->BOOST;
+			player2->BOOST_QUANTITY -= 0.1f;
+			limitVelocity(player2->body->body, MAX_VELOCITY + player2->BOOST);
+		}
+		else
+		{
+			if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
+			else if (IsKeyDown(KEY_DOWN)) vel2 = 0.2f;
+			else {
+				vel2 = 0.0f;
+				applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+			}
+			limitVelocity(player2->body->body, MAX_VELOCITY);
 		}
 		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
-		limitVelocity(player2->body->body, MAX_VELOCITY);
 		player2->body->body->ApplyForceToCenter(f2, true);
 	}
 	else
 	{
-		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, 4.0f));
+		b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 		player2->body->body->ApplyForceToCenter(-f2, true);
 
-		if (cnt2 == 50) {
-			accelerateP2 = false;
-			cnt2 = 0;
+		if (player2->cnt == 50) {
+			player2->accelerate = false;
+			player2->cnt = 0;
 		}
-		else cnt2++;
+		else player2->cnt++;
 	}
 	
 	if (IsKeyDown(KEY_LEFT)) player2->body->body->ApplyTorque(-0.2f, true);
 	else if (IsKeyDown(KEY_RIGHT)) player2->body->body->ApplyTorque(0.2f, true);
 	else{
 		r2 = player2->body->body->GetAngularVelocity();
-		player2->body->body->ApplyTorque(-r2, true);
+		player2->body->body->ApplyTorque(-r2/100, true);
 	}
 
 	
@@ -424,7 +449,7 @@ update_status ModuleGame::Update()
 	player->Update();
 	player2->Update();
 
-	for (int i = 1; i < 13; i++){
+	for (int i = 1; i < 16; i++){
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
 		limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
@@ -434,15 +459,17 @@ update_status ModuleGame::Update()
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	
-	if (bodyA->id == 1 && bodyB->id == 3)
-	{
-		accelerateP1 = true;
-	}
-	if (bodyA->id == 2 && bodyB->id == 3)
-	{
-		accelerateP2 = true;
-	}
-	
+	if (bodyA != nullptr && bodyB != nullptr)
+	{ 
+		if (bodyA->id == 1 && bodyB->id == 3) player->accelerate = true;
+		if (bodyA->id == 2 && bodyB->id == 3) player2->accelerate = true;
 
+		if (bodyA->id == 1 && bodyB->id == 4)
+			if(player->BOOST_QUANTITY <10.0f)player->BOOST_QUANTITY = 10.0f;
+		
+
+		if (bodyA->id == 2 && bodyB->id == 4)
+			if (player2->BOOST_QUANTITY < 10.0f)player2->BOOST_QUANTITY = 10.0f;
+
+	}
 }

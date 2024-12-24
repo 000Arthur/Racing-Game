@@ -51,14 +51,8 @@ public:
 	float vel2 = 0.0f;
 
 	const float MAX_VELOCITY = 2.0f;
-	const float FRICTION_COEFFICIENT = 0.2f;
+	const float FRICTION_COEFFICIENT = 0.1f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
-
-	bool accelerateP1 = false;
-	int cnt = 0;
-
-	bool accelerateP2 = false;
-	int cnt2 = 0;
 
 	Camera2D camera1 = { 0 };
 
@@ -85,6 +79,9 @@ public:
 	std::vector<Vector2> BostersPos = {
 	{563, 300},
 	{178, 960},
-	{1283, 726}
+	{1283, 726},
+	{964, 564},
+	{479, 608},
+	{1631, 991}
 	};
 };
