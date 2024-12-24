@@ -40,6 +40,8 @@ public:
 	unsigned int in_Reverse_fx;
 	unsigned int in_Reverse_fx_2;
 
+	unsigned int finish_line_fx;
+
 
 private:
 	Music music;

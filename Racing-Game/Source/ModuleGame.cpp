@@ -169,6 +169,27 @@ private:
 	Texture2D texture;
 };
 
+class FinishLine : public PhysicEntity {
+public:
+	FinishLine(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 126, 17, id), _listener) {
+		body->id = 7;
+
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+
+	}
+public:
+	Texture2D texture;
+};
+
 class Bost : public PhysicEntity
 {
 public:
@@ -281,7 +302,7 @@ bool ModuleGame::Start()
 		if (i<3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
 		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[2], 4));// poner enum y no 3
 	}
-
+	entities.push_back(new FinishLine(App->physics, 193, 686, this, tires[1], 3));
 	return ret;
 }
 
@@ -379,6 +400,7 @@ update_status ModuleGame::Update()
 			if (IsKeyPressed(KEY_W)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
 			else if (IsKeyPressed(KEY_S))App->audio->PlayFx(App->audio->in_Reverse_fx_2);
 			limitVelocity(player->body->body, MAX_VELOCITY);
+			
 		}
 
 		b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel));
@@ -505,5 +527,12 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(App->audio->collision_object_fx);
 
 		}
+
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 7))
+		{
+			App->audio->PlayFx(App->audio->finish_line_fx);
+
+		}
 	}
 }
+

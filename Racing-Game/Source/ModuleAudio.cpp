@@ -136,10 +136,12 @@ void ModuleAudio::SoundsFx()
 
 	collision_object_fx = LoadFx("Assets/Audio/Fx/crash.mp3");
 
-	start_engines_fx = LoadFx("Assets/Audio/Fx/start engines.mp3");
-	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/start engines.mp3");
+	start_engines_fx = LoadFx("Assets/Audio/Fx/engine-start.mp3");
+	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/engine-start.mp3");
 
 	in_Reverse_fx = LoadFx("Assets/Audio/Fx/Reverse.mp3");
 	in_Reverse_fx_2 = LoadFx("Assets/Audio/Fx/Reverse.mp3");
+
+	finish_line_fx= LoadFx("Assets/Audio/Fx/Finishline.mp3");
 
 }
