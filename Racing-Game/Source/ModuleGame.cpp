@@ -270,7 +270,7 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	App->audio->SoundsFx();
-	App->audio->PlayMusic("Assets/Audio/Music/gym-phonk-187854.mp3", 1.0f);
+	App->audio->PlayMusic("Assets/Audio/Music/background.ogg", 1.0f);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
