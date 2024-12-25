@@ -189,6 +189,26 @@ public:
 	Texture2D texture;
 };
 
+class Checkpoint : public PhysicEntity {
+public:
+	Checkpoint(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 126, 126, id), _listener) {
+
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+
+	}
+public:
+	Texture2D texture;
+};
+
 class Bost : public PhysicEntity
 {
 public:
@@ -269,6 +289,8 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
+	checkpointStates.resize(checkpointPos.size(), false); //Player 1
+	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
 	App->audio->PlayMusic("Assets/Audio/Music/background.ogg", 1.0f);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
@@ -302,7 +324,11 @@ bool ModuleGame::Start()
 		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[2], 4));// poner enum y no 3
 	}
 	entities.push_back(new FinishLine(App->physics, 193, 686, this, tires[1], 7));
-	entities.push_back(new FinishLine(App->physics, 193, 900, this, tires[1], 8));
+
+	for (int i = 0; i < 7; ++i) {
+		entities.push_back(new Checkpoint(App->physics, checkpointPos[i].x, checkpointPos[i].y, this, tires[1], 8+i));
+	}
+
 	return ret;
 }
 
@@ -528,30 +554,87 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		}
 
-		if ((bodyA->id == 1) && (bodyB->id == 7) && check)
+
+		for (int i = 0; i < checkpointStates.size(); ++i)
 		{
+			if (bodyA->id == 1 && bodyB->id == 8 + i) // Checkpoint IDs start at 9
+			{
+				if (i == 0 || checkpointStates[i - 1]) // Ensure previous checkpoints are activated
+				{
+					if (!checkpointStates[i]) {
+						checkpointStates[i] = true;
+						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
+						printf("Checkpoint %d passed!\n", i + 1);
+					}
+					
+					else {
+						printf("Checkpoint %d ignore!\n", i + 1);
+					}
+					
+					break; 
+				}
+			}
 			
-			App->audio->PlayFx(App->audio->finish_line_fx);
-			check = false;
-
 		}
 
-		if ((bodyA->id == 2) && (bodyB->id == 7) && check_2)
+		bool allCheckpointsPassed = true;
+		for (bool state : checkpointStates) {
+			if (!state) {
+				allCheckpointsPassed = false;
+				break;  
+			}
+		}
+
+		for (int i = 0; i < checkpointStates2.size(); ++i)
+		{
+			if (bodyA->id == 2 && bodyB->id == 8 + i) // Player 2
+			{
+				if (i == 0 || checkpointStates2[i - 1]) // Ensure previous checkpoints are activated
+				{
+					if (!checkpointStates2[i]) {
+						checkpointStates2[i] = true;
+						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
+						printf("Checkpoint %d passed!\n", i + 1);
+					}
+
+					else {
+						printf("Checkpoint %d ignore!\n", i + 1);
+					}
+					break;
+				}
+			}
+		}
+
+		bool allCheckpointsPassed2 = true;
+		for (bool state : checkpointStates2) {
+			if (!state) {
+				allCheckpointsPassed2 = false;
+				break; 
+			}
+		}
+
+		if ((bodyA->id == 1) && (bodyB->id == 7) && allCheckpointsPassed)
 		{
 
 			App->audio->PlayFx(App->audio->finish_line_fx);
-			check_2 = false;
 
+			for (int i = 0; i < checkpointStates.size(); ++i)
+			{				
+				checkpointStates[i] = false;				
+			}
+			allCheckpointsPassed = false;
 		}
 
-		if ((bodyA->id == 1) && (bodyB->id == 8))
+		if ((bodyA->id == 2) && (bodyB->id == 7) && allCheckpointsPassed2)
 		{
-			check=true;
-		}
-		
-		if ((bodyA->id == 2) && (bodyB->id == 8))
-		{
-			check_2 = true;
+
+			App->audio->PlayFx(App->audio->finish_line_fx);
+
+			for (int i = 0; i < checkpointStates2.size(); ++i)
+			{
+				checkpointStates2[i] = false;
+			}
+			allCheckpointsPassed2 = false;
 		}
 	}
 }

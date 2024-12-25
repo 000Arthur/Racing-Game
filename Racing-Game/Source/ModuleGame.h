@@ -72,6 +72,12 @@ public:
 	bool ray_on;
 	int entitieQ = 16;
 
+
+	int currentCheckpointIndex = 0;
+	int currentCheckpointIndex2 = 0;
+	std::vector<bool> checkpointStates;
+	std::vector<bool> checkpointStates2;
+
 	std::vector<Vector2> tiresPos = {
 
 		{365, 604},
@@ -93,6 +99,17 @@ public:
 		{964, 564},
 		{479, 608},
 		{1631, 991}
+	};
+
+
+	std::vector<Vector2> checkpointPos = {
+		{850, 325},
+		{1150, 720},
+		{1816, 730},
+		{1728, 958},
+		{652, 955},
+		{484, 670},
+		{358, 996}
 	};
 
 };

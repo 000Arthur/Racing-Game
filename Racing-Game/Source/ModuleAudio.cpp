@@ -144,4 +144,6 @@ void ModuleAudio::SoundsFx()
 
 	finish_line_fx= LoadFx("Assets/Audio/Fx/Finishline.mp3");
 
+	checkpoint_fx = LoadFx("Assets/Audio/Fx/checkpoint.mp3");
+
 }

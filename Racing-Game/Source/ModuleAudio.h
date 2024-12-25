@@ -42,6 +42,7 @@ public:
 
 	unsigned int finish_line_fx;
 
+	unsigned int checkpoint_fx;
 
 private:
 	Music music;
