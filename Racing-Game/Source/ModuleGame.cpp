@@ -417,6 +417,7 @@ update_status ModuleGame::Update()
 		}
 		else
 		{
+			App->audio->StopFx(App->audio->bost_fx);
 			App->audio->StopFx(App->audio->accelerate_fx);
 
 			if (IsKeyDown(KEY_W)) vel = -2.0f;
@@ -424,9 +425,19 @@ update_status ModuleGame::Update()
 			else {
 				vel = 0.0f;
 				applyFriction(player->body->body, FRICTION_COEFFICIENT);
+				App->audio->StopFx(App->audio->engine_fx);
+				App->audio->StopFx(App->audio->in_Reverse_fx);
+
 			}
-			if (IsKeyPressed(KEY_W)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
-			else if (IsKeyPressed(KEY_S))App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+			if (IsKeyPressed(KEY_W)) { 
+				App->audio->StopFx(App->audio->in_Reverse_fx); 
+				if (App->audio->PlayFx(App->audio->accelerate_fx))	App->audio->StopFx(App->audio->engine_fx);
+				else if (!App->audio->PlayFx(App->audio->accelerate_fx)) App->audio->PlayFx(App->audio->engine_fx);
+			}
+			else if (IsKeyPressed(KEY_S)) {
+				App->audio->PlayFx(App->audio->in_Reverse_fx); 
+				App->audio->StopFx(App->audio->engine_fx); 
+			}
 			limitVelocity(player->body->body, MAX_VELOCITY);
 			
 		}
@@ -472,16 +483,28 @@ update_status ModuleGame::Update()
 		}
 		else
 		{
-			App->audio->StopFx(App->audio->accelerate_fx_2);
+			App->audio->StopFx(App->audio->bost_fx_2);
 
+			App->audio->StopFx(App->audio->accelerate_fx_2);
 			if (IsKeyDown(KEY_UP)) vel2 = -2.0f;
 			else if (IsKeyDown(KEY_DOWN)) vel2 = 0.2f;
 			else {
 				vel2 = 0.0f;
 				applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+				App->audio->StopFx(App->audio->engine_fx_2);
+				App->audio->StopFx(App->audio->engine_fx_2);
 			}
-			if (IsKeyPressed(KEY_UP)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
-			else if (IsKeyPressed(KEY_DOWN))App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+			if (IsKeyPressed(KEY_UP)) {
+				App->audio->StopFx(App->audio->in_Reverse_fx_2);
+				
+				if (App->audio->PlayFx(App->audio->accelerate_fx_2))	App->audio->StopFx(App->audio->engine_fx_2);
+				else if(!App->audio->PlayFx(App->audio->accelerate_fx_2)) App->audio->PlayFx(App->audio->engine_fx_2);
+
+			}
+			else if (IsKeyPressed(KEY_DOWN)) {
+				App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+				App->audio->StopFx(App->audio->engine_fx_2);
+			}
 
 			limitVelocity(player2->body->body, MAX_VELOCITY);
 		}
@@ -534,8 +557,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	if (bodyA != nullptr && bodyB != nullptr)
 	{ 
-		if (bodyA->id == 1 && bodyB->id == 3) player->accelerate = true; 
-		if (bodyA->id == 2 && bodyB->id == 3) player2->accelerate = true;
+		if (bodyA->id == 1 && bodyB->id == 3) player->accelerate = true; App->audio->PlayFx(App->audio->bost_fx);
+		if (bodyA->id == 2 && bodyB->id == 3) player2->accelerate = true; App->audio->PlayFx(App->audio->bost_fx_2);
 
 		if (bodyA->id == 1 && bodyB->id == 4)
 			if (player->BOOST_QUANTITY < 10.0f)player->BOOST_QUANTITY = 10.0f;

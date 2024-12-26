@@ -37,12 +37,18 @@ public:
 	unsigned int start_engines_fx;
 	unsigned int start_engines_fx_2;
 
+	unsigned int engine_fx;
+	unsigned int engine_fx_2;
+
 	unsigned int in_Reverse_fx;
 	unsigned int in_Reverse_fx_2;
 
 	unsigned int finish_line_fx;
 
 	unsigned int checkpoint_fx;
+
+	unsigned int bost_fx;
+	unsigned int bost_fx_2;
 
 private:
 	Music music;

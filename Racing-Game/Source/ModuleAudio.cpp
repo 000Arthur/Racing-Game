@@ -132,12 +132,15 @@ void ModuleAudio::SoundsFx()
 	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 
 
-	collision_cars_fx = LoadFx("Assets/Audio/Fx/car-crash.mp3");
+	collision_cars_fx = LoadFx("Assets/Audio/Fx/car crash.mp3");
 
-	collision_object_fx = LoadFx("Assets/Audio/Fx/crash.mp3");
+	collision_object_fx = LoadFx("Assets/Audio/Fx/wheels crash.mp3");
 
 	start_engines_fx = LoadFx("Assets/Audio/Fx/engine-start.mp3");
 	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/engine-start.mp3");
+
+	engine_fx = LoadFx("Assets/Audio/Fx/engine.mp3");
+	engine_fx_2 = LoadFx("Assets/Audio/Fx/engine.mp3");
 
 	in_Reverse_fx = LoadFx("Assets/Audio/Fx/Reverse.mp3");
 	in_Reverse_fx_2 = LoadFx("Assets/Audio/Fx/Reverse.mp3");
@@ -145,5 +148,8 @@ void ModuleAudio::SoundsFx()
 	finish_line_fx= LoadFx("Assets/Audio/Fx/Finishline.mp3");
 
 	checkpoint_fx = LoadFx("Assets/Audio/Fx/checkpoint.mp3");
+
+	bost_fx = LoadFx("Assets/Audio/Fx/bost.wav");
+	bost_fx_2 = LoadFx("Assets/Audio/Fx/bost.wav");
 
 }
