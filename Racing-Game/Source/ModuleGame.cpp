@@ -296,6 +296,8 @@ bool ModuleGame::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
+	speedBoost = LoadTexture("Assets/SpeedBoost.png");
+	nitroBoost = LoadTexture("Assets/NitroBoost.png");
 	car = LoadTexture("Assets/Car2.png");
 	greenCar = LoadTexture("Assets/Car1.png");
 
@@ -320,8 +322,8 @@ bool ModuleGame::Start()
 		else actualTire++;
 	}
 	for (int i = 0; i < 6; ++i) {
-		if (i<3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[1], 3));// poner enum y no 3
-		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, tires[2], 4));// poner enum y no 3
+		if (i<3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, speedBoost, 3));// poner enum y no 3
+		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, nitroBoost, 4));// poner enum y no 3
 	}
 	entities.push_back(new FinishLine(App->physics, 193, 686, this, tires[1], 7));
 

@@ -37,6 +37,8 @@ public:
 	Texture2D car;
 	Texture2D greenCar;
 	Texture2D tires[3];
+	Texture2D speedBoost;
+	Texture2D nitroBoost;
 
 	Texture2D bike;
 	Texture2D circuit;
