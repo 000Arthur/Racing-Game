@@ -15,6 +15,9 @@ class Car;
 class Bike;
 class Board;
 class Bost;
+class outRoad;
+class onRoad;
+
 
 
 class ModuleGame : public Module
@@ -34,7 +37,8 @@ public:
 	std::vector<Bost*> bosters;
 	
 	Board* board;
-
+	onRoad* piano;
+	outRoad* limit;
 	Texture2D car;
 	Texture2D greenCar;
 	Texture2D tires[3];
@@ -52,8 +56,8 @@ public:
 	float vel = 0.0f;
 	float vel2 = 0.0f;
 
-	const float MAX_VELOCITY = 2.0f;
-	const float FRICTION_COEFFICIENT = 0.1f;
+	float MAX_VELOCITY = 2.0f;
+	const float FRICTION_COEFFICIENT = 0.2f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
 
 	unsigned int accelerate_fx_id = 0;
@@ -74,7 +78,7 @@ public:
 	vec2<int> ray;
 	bool ray_on;
 	int entitieQ = 16;
-
+	bool out = false;
 
 	int currentCheckpointIndex = 0;
 	int currentCheckpointIndex2 = 0;

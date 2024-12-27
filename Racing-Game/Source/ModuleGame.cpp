@@ -72,6 +72,224 @@ private:
 	Texture2D texture;
 };
 
+class onRoad : public PhysicEntity
+{
+public:
+	static constexpr int on_circuit[170] =
+	{
+		132, 708,
+		131, 518,
+		131, 496,
+		142, 465,
+		145, 450,
+		153, 439,
+		168, 425,
+		247, 334,
+		301, 273,
+		321, 247,
+		347, 224,
+		369, 217,
+		410, 205,
+		574, 207,
+		827, 208,
+		853, 210,
+		879, 221,
+		901, 239,
+		910, 255,
+		919, 274,
+		927, 307,
+		927, 411,
+		939, 437,
+		1115, 635,
+		1130, 646,
+		1150, 652,
+		1170, 656,
+		1823, 658,
+		1841, 660,
+		1854, 663,
+		1867, 671,
+		1870, 674,
+		1879, 682,
+		1903, 714,
+		1913, 941,
+		1909, 962,
+		1899, 977,
+		1888, 991,
+		1875, 1003,
+		1849, 1014,
+		1850, 1016,
+		1826, 1024,
+		1736, 1028,
+		1624, 1026,
+		1359, 1026,
+		1346, 1024,
+		1321, 1015,
+		1298, 1005,
+		1282, 996,
+		1262, 976,
+		1242, 961,
+		1218, 957,
+		1193, 966,
+		1174, 983,
+		1153, 1004,
+		1115, 1019,
+		1077, 1023,
+		623, 1022,
+		596, 1013,
+		567, 990,
+		544, 946,
+		539, 923,
+		538, 780,
+		530, 756,
+		519, 745,
+		498, 734,
+		467, 740,
+		448, 758,
+		443, 773,
+		447, 788,
+		442, 971,
+		435, 1001,
+		429, 1014,
+		420, 1026,
+		400, 1046,
+		379, 1060,
+		357, 1066,
+		350, 1068,
+		220, 1068,
+		195, 1059,
+		176, 1052,
+		165, 1041,
+		150, 1023,
+		138, 1000,
+		131, 962
+	};
+
+	onRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateChainSenor(0, 0, on_circuit, 170, 11), _listener)
+		, texture(_texture)
+	{
+		body->id = 12;
+		//2722 x 1466
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
+	}
+
+private:
+	Texture2D texture;
+};
+
+class outRoad : public PhysicEntity
+{
+public:
+	static constexpr int out_circuit[164] =
+	{
+		124, 961,
+		124, 527,
+		124, 504,
+		129, 486,
+		134, 466,
+		141, 449,
+		149, 435,
+		161, 419,
+		316, 241,
+		333, 226,
+		343, 217,
+		356, 211,
+		375, 203,
+		392, 200,
+		838, 197,
+		855, 200,
+		870, 204,
+		890, 217,
+		904, 230,
+		918, 246,
+		927, 264,
+		932, 281,
+		936, 306,
+		935, 414,
+		941, 422,
+		1120, 627,
+		1132, 637,
+		1148, 644,
+		1163, 647,
+		1174, 648,
+		1825, 648,
+		1843, 651,
+		1859, 657,
+		1874, 666,
+		1886, 675,
+		1901, 690,
+		1913, 708,
+		1918, 950,
+		1913, 971,
+		1903, 991,
+		1891, 1004,
+		1879, 1014,
+		1861, 1026,
+		1830, 1033,
+		1358, 1035,
+		1322, 1031,
+		1298, 1020,
+		1274, 1004,
+		1254, 984,
+		1239, 969,
+		1210, 969,
+		1194, 983,
+		1165, 1008,
+		1128, 1024,
+		1086, 1033,
+		632, 1033,
+		601, 1026,
+		579, 1016,
+		565, 1000,
+		543, 970,
+		533, 934,
+		532, 922,
+		531, 782,
+		526, 764,
+		510, 749,
+		507, 745,
+		484, 742,
+		467, 753,
+		454, 765,
+		451, 787,
+		452, 965,
+		445, 1002,
+		432, 1028,
+		425, 1039,
+		396, 1063,
+		371, 1072,
+		356, 1075,
+		215, 1074,
+		186, 1067,
+		165, 1051,
+		151, 1037,
+		126, 985
+	};
+
+	outRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateChainSenor(0, 0, out_circuit, 164, 11), _listener)
+		, texture(_texture)
+	{
+		body->id = 11;
+		//2722 x 1466
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
+	}
+
+private:
+	Texture2D texture;
+};
 
 class Board : public PhysicEntity
 {
@@ -353,6 +571,9 @@ bool ModuleGame::Start()
 	}
 
 	board = new Board(App->physics, 0, 0, this, circuit);
+	limit = new outRoad(App->physics, 0, 0, this, circuit);
+	piano = new onRoad(App->physics, 0, 0, this, circuit);
+
 	player = new Car(App->physics, 210, 730, this, greenCar,1);
 	player2 = new Car(App->physics, 174, 750, this, car,2);
 
@@ -377,7 +598,6 @@ bool ModuleGame::Start()
 	for (int i = 0; i < 3; i++)
 	{
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], 16));
-
 	}
 
 	return ret;
@@ -585,8 +805,9 @@ update_status ModuleGame::Update()
 
 	//UPDATE---------------------
 	board->Update();
-	player->Update();
-	player2->Update();
+	limit->Update();
+	piano->Update();
+
 
 	int rectWidth = player->BOOST_QUANTITY*20; // Ancho del rectángulo
 	DrawRectangle(rectX, rectY, rectWidth, rectHeight, RED);
@@ -599,6 +820,10 @@ update_status ModuleGame::Update()
 		limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
 	}
+
+	player->Update();
+	player2->Update();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -641,7 +866,12 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(App->audio->crack_fx);
 
 		}
-
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 12)) {
+			MAX_VELOCITY = 2.0f;
+		}
+		else if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 11)) {
+			MAX_VELOCITY = 1.0f;
+		}
 
 		for (int i = 0; i < checkpointStates.size(); ++i)
 		{
