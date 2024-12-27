@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "Timer.h"
 
 #include <limits.h>
 
@@ -20,7 +21,19 @@ public:
 	bool Draw(Texture2D texture, int x, int y, const Rectangle* section = NULL, double angle = 0, int pivot_x = 0, int pivot_y = 0) const;
     bool DrawText(const char* text, int x, int y, Font font, int spacing, Color tint) const;
 
+	void Timer_Player1();
+	void Timer_Player2();
 public:
+
+	Timer timer;
+	Timer timer2;
+	double game_timer = 0.0;
+	double time_elapsed1;
+	double time_elapsed2;
+	double player1_time = 0.0;
+	double player2_time = 0.0;
+
+	Font myFont;
 
 	Color background;
     Rectangle camera;

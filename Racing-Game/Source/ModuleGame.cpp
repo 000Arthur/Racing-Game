@@ -209,6 +209,48 @@ public:
 	Texture2D texture;
 };
 
+class Puddle : public PhysicEntity {
+public:
+	Puddle(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 45, 90, id), _listener) {
+
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
+
+	}
+public:
+	Texture2D texture;
+};
+class Crack : public PhysicEntity {
+public:
+	Crack(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
+		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 45, 60, id), _listener), angle(30.0f) {
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		float rotationDegrees = body->GetRotation() * RAD2DEG;
+
+		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
+			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
+			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, rotationDegrees + angle, WHITE);
+
+	}
+public:
+	Texture2D texture;
+	float angle=30;
+};
+
+
 class Bost : public PhysicEntity
 {
 public:
@@ -329,6 +371,13 @@ bool ModuleGame::Start()
 
 	for (int i = 0; i < 7; ++i) {
 		entities.push_back(new Checkpoint(App->physics, checkpointPos[i].x, checkpointPos[i].y, this, tires[1], 8+i));
+	}
+	entities.push_back(new Puddle(App->physics, 350, 795, this, tires[1], 15));
+
+	for (int i = 0; i < 3; i++)
+	{
+		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], 16));
+
 	}
 
 	return ret;
@@ -579,6 +628,20 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		}
 
+		//puddle
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 15))
+		{
+			App->audio->PlayFx(App->audio->puddle_fx);
+
+		}
+	
+		//crack
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 16))
+		{
+			App->audio->PlayFx(App->audio->crack_fx);
+
+		}
+
 
 		for (int i = 0; i < checkpointStates.size(); ++i)
 		{
@@ -640,7 +703,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == 1) && (bodyB->id == 7) && allCheckpointsPassed)
 		{
-
+			App->renderer->timer.Restart();
+			App->renderer->timer.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates.size(); ++i)
@@ -652,7 +716,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == 2) && (bodyB->id == 7) && allCheckpointsPassed2)
 		{
-
+			App->renderer->timer2.Restart();
+			App->renderer->timer2.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates2.size(); ++i)

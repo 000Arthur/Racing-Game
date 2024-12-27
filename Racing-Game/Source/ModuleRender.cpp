@@ -2,11 +2,19 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
+#include "ModuleGame.h"
+#include "Timer.h"
+
 #include <math.h>
+#include <string>
+
 
 ModuleRender::ModuleRender(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
     background = RAYWHITE;
+    timer.Start();
+    timer2.Start();
+
 }
 
 // Destructor
@@ -17,6 +25,11 @@ ModuleRender::~ModuleRender()
 bool ModuleRender::Init()
 {
 	LOG("Creating Renderer context");
+    myFont = LoadFont("Assets/Font/SpeedyRegular-7BLoE.ttf");
+    if (myFont.baseSize == 0) {
+        LOG("Failed to load font.");
+        return false;
+    }
 	bool ret = true;
 
 	return ret;
@@ -41,20 +54,78 @@ update_status ModuleRender::Update()
 	return UPDATE_CONTINUE;
 }
 
+void ModuleRender::Timer_Player1()
+{
+
+    // Display the elapsed time
+    time_elapsed1 = timer.ReadSec();
+
+    // Calculate minutes, seconds, and milliseconds
+    int minutes = static_cast<int>(time_elapsed1) / 60;
+    int seconds = static_cast<int>(time_elapsed1) % 60;
+    int milliseconds = static_cast<int>((time_elapsed1 - static_cast<int>(time_elapsed1)) * 1000);
+
+    // Format the time string to "mm:ss:ms"
+    std::string time_text =
+        (minutes < 10 ? "Time player 1: 0" : "") + std::to_string(minutes) + ":" +
+        (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+        (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+
+    // Display the formatted time on the screen
+    DrawText(time_text.c_str(), 10, 30, myFont, 20, BLACK);
+
+}
+
+void ModuleRender::Timer_Player2()
+{
+
+    // Display the elapsed time
+    time_elapsed2 = timer2.ReadSec();
+
+
+    // Calculate minutes, seconds, and milliseconds
+    int minutes = static_cast<int>(time_elapsed2) / 60;
+    int seconds = static_cast<int>(time_elapsed2) % 60;
+    int milliseconds = static_cast<int>((time_elapsed2 - static_cast<int>(time_elapsed2)) * 1000);
+
+    // Format the time string to "mm:ss:ms"
+    std::string time_text =
+        (minutes < 10 ? "Time player 2: 0" : "") + std::to_string(minutes) + ":" +
+        (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+        (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+
+    // Display the formatted time on the screen
+    DrawText(time_text.c_str(), 10, 100, myFont, 20, BLACK);
+}
+
+
 // PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
 {
+    BeginDrawing();
+
+    ClearBackground(background);
+
+    Timer_Player1(); 
+ 
+    Timer_Player2();
+
+
     // Draw everything in our batch!
     DrawFPS(10, 10);
 
     EndDrawing();
 
-	return UPDATE_CONTINUE;
+    return UPDATE_CONTINUE;
 }
 
 // Called before quitting
 bool ModuleRender::CleanUp()
 {
+    timer.Stop();
+
+
+    UnloadFont(myFont);
 	return true;
 }
 

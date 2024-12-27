@@ -12,9 +12,11 @@ public:
 
 	void Start();
 	double ReadSec() const;
-
+	void Stop();
+	void Restart();
 private:
+	bool running = false;
 
-    // Start time in seconds
-	double started_at;   
+	// Start time in seconds
+	double started_at;
 };

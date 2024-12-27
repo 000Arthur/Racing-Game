@@ -46,6 +46,8 @@ public:
 	unsigned int finish_line_fx;
 
 	unsigned int checkpoint_fx;
+	unsigned int puddle_fx;
+	unsigned int crack_fx;
 
 	unsigned int bost_fx;
 	unsigned int bost_fx_2;

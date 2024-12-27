@@ -2,6 +2,7 @@
 
 #include "Globals.h"
 #include "Module.h"
+#include "ModuleRender.h"
 
 #include "p2Point.h"
 
@@ -112,6 +113,12 @@ public:
 		{652, 955},
 		{484, 670},
 		{358, 996}
+	};
+
+	std::vector<Vector2> crackpointPos = {
+		{850, 240},
+		{900, 280},
+		{1775, 880}		
 	};
 
 };

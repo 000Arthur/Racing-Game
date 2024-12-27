@@ -149,6 +149,9 @@ void ModuleAudio::SoundsFx()
 
 	checkpoint_fx = LoadFx("Assets/Audio/Fx/checkpoint.mp3");
 
+	puddle_fx = LoadFx("Assets/Audio/Fx/puddle.mp3");
+	crack_fx = LoadFx("Assets/Audio/Fx/cracks.mp3");
+
 	bost_fx = LoadFx("Assets/Audio/Fx/bost.wav");
 	bost_fx_2 = LoadFx("Assets/Audio/Fx/bost.wav");
 
