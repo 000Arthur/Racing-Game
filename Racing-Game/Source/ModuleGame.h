@@ -18,6 +18,13 @@ class Bost;
 class outRoad;
 class onRoad;
 
+enum Enum
+{
+	NO_INTERACTION,PLAYER_1, PLAYER_2, 
+	SPEED_BOOST,NITRO_BOOST,HIT, TIRE, FINISH_LINE,CHECK,
+	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD
+};
+
 
 
 class ModuleGame : public Module
