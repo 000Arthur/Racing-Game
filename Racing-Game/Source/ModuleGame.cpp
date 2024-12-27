@@ -703,6 +703,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == 1) && (bodyB->id == 7) && allCheckpointsPassed)
 		{
+			App->renderer->player1_time = App->renderer->timer.ReadSec(); //Final time
+			printf("Tiempo player 1 %f", App->renderer->player1_time);
 			App->renderer->timer.Restart();
 			App->renderer->timer.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
@@ -716,6 +718,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == 2) && (bodyB->id == 7) && allCheckpointsPassed2)
 		{
+			App->renderer->player2_time = App->renderer->timer2.ReadSec(); //Final time
 			App->renderer->timer2.Restart();
 			App->renderer->timer2.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
