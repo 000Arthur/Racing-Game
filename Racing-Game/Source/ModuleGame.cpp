@@ -168,7 +168,7 @@ public:
 		: PhysicEntity(physics->CreateChainSenor(0, 0, on_circuit, 170, 11), _listener)
 		, texture(_texture)
 	{
-		body->id = 12;
+		body->id = 20;
 		//2722 x 1466
 	}
 
@@ -276,7 +276,7 @@ public:
 		: PhysicEntity(physics->CreateChainSenor(0, 0, out_circuit, 164, 11), _listener)
 		, texture(_texture)
 	{
-		body->id = 11;
+		body->id = 21;
 		//2722 x 1466
 	}
 
@@ -579,7 +579,8 @@ bool ModuleGame::Start()
 
 	entities.push_back(player);
 	int actualTire = 0;
-	for (int i = 0; i < 9; ++i) {
+	
+	for (int i = 0; i < 27; ++i) {
 		entities.push_back(new Bike(App->physics, tiresPos[i].x, tiresPos[i].y, this, tires[actualTire]));
 		if (actualTire >= 2)actualTire = 0;
 		else actualTire++;
@@ -866,10 +867,10 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(App->audio->crack_fx);
 
 		}
-		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 12)) {
+		if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 20)) {
 			MAX_VELOCITY = 2.0f;
 		}
-		else if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 11)) {
+		else if ((bodyA->id == 1 || bodyA->id == 2) && (bodyB->id == 21)) {
 			MAX_VELOCITY = 1.0f;
 		}
 
