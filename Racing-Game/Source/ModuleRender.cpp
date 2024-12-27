@@ -67,12 +67,12 @@ void ModuleRender::Timer_Player1()
 
     // Format the time string to "mm:ss:ms"
     std::string time_text =
-        (minutes < 10 ? "Time player 1: 0" : "") + std::to_string(minutes) + ":" +
+        (minutes < 10 ? "TIME PLAYER 1: 0" : "") + std::to_string(minutes) + ":" +
         (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
     // Display the formatted time on the screen
-    DrawText(time_text.c_str(), 10, 30, myFont, 20, BLACK);
+    DrawText(time_text.c_str(), 20, 50, myFont, 1, BLACK);
 
 }
 
@@ -90,14 +90,39 @@ void ModuleRender::Timer_Player2()
 
     // Format the time string to "mm:ss:ms"
     std::string time_text =
-        (minutes < 10 ? "Time player 2: 0" : "") + std::to_string(minutes) + ":" +
+        (minutes < 10 ? "TIME PALYER 2: 0" : "") + std::to_string(minutes) + ":" +
         (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
     // Display the formatted time on the screen
-    DrawText(time_text.c_str(), 10, 100, myFont, 20, BLACK);
+    DrawText(time_text.c_str(), 1425, 50, myFont, 1, BLACK);
 }
 
+void ModuleRender::Best_Time()
+{
+    int minutes, seconds, milliseconds;
+    if (player1_time < player2_time)
+    {
+         minutes = static_cast<int>(player1_time) / 60;
+         seconds = static_cast<int>(player1_time) % 60;
+         milliseconds = static_cast<int>((player1_time - static_cast<int>(player1_time)) * 1000);
+
+      
+    }
+    else {
+         minutes = static_cast<int>(player2_time) / 60;
+         seconds = static_cast<int>(player2_time) % 60;
+         milliseconds = static_cast<int>((player2_time - static_cast<int>(player2_time)) * 1000);
+    }
+
+    std::string time_text =
+        (minutes < 10 ? "BEST TIME: 0" : "") + std::to_string(minutes) + ":" +
+        (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+        (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+
+    // Display the formatted time on the screen
+    DrawText(time_text.c_str(), 770, 50, myFont, 1, BLACK);
+}
 
 // PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
@@ -110,7 +135,8 @@ update_status ModuleRender::PostUpdate()
  
     Timer_Player2();
 
-
+    Best_Time();
+    
     // Draw everything in our batch!
     DrawFPS(10, 10);
 
