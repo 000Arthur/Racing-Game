@@ -75,97 +75,143 @@ private:
 class onRoad : public PhysicEntity
 {
 public:
-	static constexpr int on_circuit[170] =
+	static constexpr int on_circuit[262] =
 	{
-		132, 708,
-		131, 518,
-		131, 496,
-		142, 465,
-		145, 450,
-		153, 439,
-		168, 425,
-		247, 334,
-		301, 273,
-		321, 247,
-		347, 224,
-		369, 217,
-		410, 205,
-		574, 207,
-		827, 208,
-		853, 210,
-		879, 221,
-		901, 239,
-		910, 255,
-		919, 274,
-		927, 307,
-		927, 411,
-		939, 437,
-		1115, 635,
-		1130, 646,
-		1150, 652,
-		1170, 656,
-		1823, 658,
-		1841, 660,
-		1854, 663,
-		1867, 671,
-		1870, 674,
-		1879, 682,
-		1903, 714,
-		1913, 941,
-		1909, 962,
-		1899, 977,
-		1888, 991,
-		1875, 1003,
-		1849, 1014,
-		1850, 1016,
-		1826, 1024,
-		1736, 1028,
-		1624, 1026,
-		1359, 1026,
-		1346, 1024,
-		1321, 1015,
-		1298, 1005,
-		1282, 996,
-		1262, 976,
-		1242, 961,
-		1218, 957,
-		1193, 966,
-		1174, 983,
-		1153, 1004,
-		1115, 1019,
-		1077, 1023,
-		623, 1022,
-		596, 1013,
-		567, 990,
-		544, 946,
-		539, 923,
-		538, 780,
-		530, 756,
-		519, 745,
-		498, 734,
-		467, 740,
-		448, 758,
-		443, 773,
-		447, 788,
-		442, 971,
-		435, 1001,
-		429, 1014,
-		420, 1026,
-		400, 1046,
-		379, 1060,
-		357, 1066,
-		350, 1068,
-		220, 1068,
-		195, 1059,
-		176, 1052,
-		165, 1041,
-		150, 1023,
-		138, 1000,
-		131, 962
+		133, 526,
+		133, 510,
+		134, 500,
+		138, 486,
+		143, 473,
+		152, 453,
+		164, 432,
+		174, 419,
+		188, 404,
+		204, 389,
+		230, 360,
+		249, 340,
+		270, 319,
+		292, 290,
+		309, 273,
+		323, 257,
+		335, 242,
+		354, 232,
+		363, 226,
+		381, 219,
+		415, 213,
+		466, 210,
+		495, 212,
+		545, 212,
+		602, 213,
+		674, 210,
+		724, 210,
+		784, 212,
+		831, 212,
+		854, 216,
+		867, 219,
+		885, 230,
+		903, 248,
+		914, 271,
+		920, 296,
+		923, 321,
+		925, 351,
+		925, 379,
+		925, 406,
+		925, 417,
+		933, 431,
+		961, 466,
+		980, 490,
+		1010, 522,
+		1036, 552,
+		1057, 579,
+		1097, 624,
+		1113, 640,
+		1130, 652,
+		1150, 660,
+		1169, 663,
+		1198, 662,
+		1232, 662,
+		1320, 664,
+		1405, 666,
+		1484, 667,
+		1573, 666,
+		1633, 671,
+		1673, 669,
+		1741, 667,
+		1776, 667,
+		1823, 666,
+		1842, 669,
+		1867, 682,
+		1878, 693,
+		1889, 713,
+		1897, 732,
+		1903, 764,
+		1902, 787,
+		1905, 849,
+		1906, 920,
+		1906, 940,
+		1902, 957,
+		1894, 970,
+		1884, 986,
+		1871, 999,
+		1856, 1007,
+		1834, 1013,
+		1818, 1016,
+		1780, 1019,
+		1679, 1020,
+		1635, 1017,
+		1590, 1015,
+		1484, 1014,
+		1371, 1014,
+		1329, 1011,
+		1293, 996,
+		1265, 973,
+		1240, 952,
+		1209, 950,
+		1184, 965,
+		1159, 988,
+		1136, 1001,
+		1101, 1015,
+		1059, 1015,
+		958, 1015,
+		873, 1014,
+		785, 1017,
+		689, 1016,
+		624, 1016,
+		589, 1003,
+		569, 980,
+		552, 945,
+		545, 917,
+		546, 871,
+		547, 813,
+		545, 774,
+		537, 752,
+		506, 727,
+		466, 734,
+		447, 755,
+		437, 772,
+		436, 816,
+		433, 872,
+		432, 930,
+		434, 967,
+		432, 988,
+		420, 1014,
+		406, 1033,
+		378, 1047,
+		353, 1056,
+		307, 1055,
+		247, 1052,
+		225, 1054,
+		199, 1051,
+		174, 1039,
+		152, 1006,
+		137, 962,
+		136, 908,
+		143, 818,
+		136, 736,
 	};
 
 	onRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChainSenor(0, 0, on_circuit, 170, 11), _listener)
+		: PhysicEntity(physics->CreateChainSenor(0, 0, on_circuit, 262, 11), _listener)
 		, texture(_texture)
 	{
 		body->id = ON_ROAD;
@@ -527,9 +573,8 @@ public:
 
 	float BOOST = 3.0F;
 	float BOOST_QUANTITY = 20.0F;
-	float BOOST_COLDDOWN = 100.0F;
 	float BOOST_CNT = 0.0F;
-
+	float MAX_VELOCITY = 2.0f;
 	bool accelerate = false;
 	int cnt = 0;
 };
@@ -585,8 +630,8 @@ bool ModuleGame::Start()
 	player2 = new Car(App->physics, 174, 750, this, car2[0], PLAYER_2);
 
 	entities.push_back(player);
+
 	int actualTire = 0;
-	
 	for (int i = 0; i < 27; ++i) {
 		entities.push_back(new Bike(App->physics, tiresPos[i].x, tiresPos[i].y, this, tires[actualTire]));
 		if (actualTire >= 2)actualTire = 0;
@@ -693,7 +738,7 @@ update_status ModuleGame::Update()
 			if (IsKeyDown(KEY_SPACE)&& player->BOOST_QUANTITY > 0){
 				vel = -2.0f * player->BOOST;
 				player->BOOST_QUANTITY -= 0.1f;
-				limitVelocity(player->body->body, MAX_VELOCITY + player->BOOST);
+				limitVelocity(player->body->body, player->MAX_VELOCITY + player->BOOST);
 			
 				player->texture = car1[1];
 			}
@@ -720,13 +765,14 @@ update_status ModuleGame::Update()
 					App->audio->PlayFx(App->audio->in_Reverse_fx); 
 					App->audio->StopFx(App->audio->engine_fx); 
 				}
-				limitVelocity(player->body->body, MAX_VELOCITY);
+				limitVelocity(player->body->body, player->MAX_VELOCITY);
 			}
 
 			b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel));
 			player->body->body->ApplyForceToCenter(f, true);
 		}
 		else{
+			player->texture = car1[1];
 			b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 			player->body->body->ApplyForceToCenter(-f, true);
 		
@@ -754,7 +800,7 @@ update_status ModuleGame::Update()
 			if (IsKeyDown(KEY_RIGHT_SHIFT)&& player2->BOOST_QUANTITY > 0){
 				vel2 = -2.0f * player2->BOOST;
 				player2->BOOST_QUANTITY -= 0.1f;
-				limitVelocity(player2->body->body, MAX_VELOCITY + player2->BOOST);
+				limitVelocity(player2->body->body, player2->MAX_VELOCITY + player2->BOOST);
 				player2->texture = car2[1];
 
 			}
@@ -783,13 +829,14 @@ update_status ModuleGame::Update()
 					App->audio->PlayFx(App->audio->in_Reverse_fx_2);
 					App->audio->StopFx(App->audio->engine_fx_2);
 				}
-				limitVelocity(player2->body->body, MAX_VELOCITY);
+				limitVelocity(player2->body->body, player2->MAX_VELOCITY);
 			}
 			b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
 			player2->body->body->ApplyForceToCenter(f2, true);
 		}
 		else
 		{
+			player2->texture = car2[1];
 			b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 			player2->body->body->ApplyForceToCenter(-f2, true);
 
@@ -808,9 +855,6 @@ update_status ModuleGame::Update()
 		}
 
 		limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
-
-		
-
 
 	break;
 	case END:
@@ -878,11 +922,15 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == CRACK))
 			App->audio->PlayFx(App->audio->crack_fx);
 
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == ON_ROAD))
-			MAX_VELOCITY = 2.0f;
-		
-		else if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == OUT_ROAD))
-			MAX_VELOCITY = 1.0f;
+		if (bodyA->id == PLAYER_1  && bodyB->id == ON_ROAD)
+			player->MAX_VELOCITY = 2.0f;
+		else if (bodyA->id == PLAYER_1  && bodyB->id == OUT_ROAD)
+			player->MAX_VELOCITY = 1.0f;
+
+		if (bodyA->id == PLAYER_2 && bodyB->id == ON_ROAD)
+			player2->MAX_VELOCITY = 2.0f;
+		else if (bodyA->id == PLAYER_2 && bodyB->id == OUT_ROAD)
+			player2->MAX_VELOCITY = 1.0f;
 
 		for (int i = 0; i < checkpointStates.size(); ++i)
 		{

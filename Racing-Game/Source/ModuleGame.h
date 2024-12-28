@@ -64,7 +64,6 @@ public:
 	float vel = 0.0f;
 	float vel2 = 0.0f;
 
-	float MAX_VELOCITY = 2.0f;
 	const float FRICTION_COEFFICIENT = 0.2f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
 
