@@ -79,11 +79,10 @@ void ModuleRender::Start_game() {
 void ModuleRender::End_game() {
 
     std::string title = "TOTAL TIME";
-    Vector2 position = { 750.0f, 200.0f }; // Posición del título de "TOTAL TIME"
-    Vector2 position_player1 = { 630.0f, 300.0f }; // Columna de tiempos para el Player 1
-    Vector2 position_player2 = { 1020.0f, 300.0f }; // Columna de tiempos para el Player 2
+    Vector2 position = { 750.0f, 200.0f }; 
+    Vector2 position_player1 = { 630.0f, 300.0f }; 
+    Vector2 position_player2 = { 1020.0f, 300.0f };
 
-    // Dibujar el título en la pantalla
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
 
     for (int i = 0; i < 3; ++i) {
@@ -92,32 +91,27 @@ void ModuleRender::End_game() {
             int seconds = static_cast<int>(timer_1[i]) % 60;
             int milliseconds = static_cast<int>((timer_1[i] - static_cast<int>(timer_1[i])) * 1000);
 
-            // Crear el formato de tiempo: "MM:SS:MMM"
             std::string time_text =
                 (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
                 (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
                 (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
-            // Dibujar el tiempo de la vuelta de Player 1
             DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
                 { position_player1.x, position_player1.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
         
     }
 
-    // Mostrar los tiempos de las vueltas de Player 2
     for (int i = 0; i < 3; ++i) {
 
         int minutes = static_cast<int>(timer_2[i] / 60);
         int seconds = static_cast<int>(timer_2[i]) % 60;
         int milliseconds = static_cast<int>((timer_2[i] - static_cast<int>(timer_2[i])) * 1000);
 
-        // Crear el formato de tiempo: "MM:SS:MMM"
         std::string time_text =
             (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
             (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
             (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
-        // Dibujar el tiempo de la vuelta de Player 2
         DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
             { position_player2.x, position_player2.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
     }
@@ -192,11 +186,19 @@ void ModuleRender::Best_Time()
         best_time = player2_time;
     }
 
-    minutes = static_cast<int>(best_time) / 60;
-    seconds = static_cast<int>(best_time) % 60;
-    milliseconds = static_cast<int>((best_time - static_cast<int>(best_time)) * 1000);
+    std::string time_text;
 
-    std::string time_text =
+    if (best_time == 1000000) {
+        time_text = "BEST TIME: 00:00:00";
+    }
+    else {
+
+        minutes = static_cast<int>(best_time) / 60;
+        seconds = static_cast<int>(best_time) % 60;
+        milliseconds = static_cast<int>((best_time - static_cast<int>(best_time)) * 1000);
+    }
+    
+    time_text =
         (minutes < 10 ? "BEST TIME: 0" : "BEST TIME: ") + std::to_string(minutes) + ":" +
         (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);

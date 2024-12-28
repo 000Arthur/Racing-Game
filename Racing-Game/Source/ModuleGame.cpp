@@ -1050,6 +1050,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 
 		if (player1_lap >= 3 && player2_lap >= 3) {
+			App->audio->PlayFx(App->audio->start_fx);
+
 			state = END;
 		}
 
