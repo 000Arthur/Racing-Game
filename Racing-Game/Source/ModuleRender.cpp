@@ -90,7 +90,7 @@ void ModuleRender::Timer_Player2()
 
     // Format the time string to "mm:ss:ms"
     std::string time_text =
-        (minutes < 10 ? "TIME PALYER 2: 0" : "") + std::to_string(minutes) + ":" +
+        (minutes < 10 ? "TIME PLAYER 2: 0" : "") + std::to_string(minutes) + ":" +
         (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
