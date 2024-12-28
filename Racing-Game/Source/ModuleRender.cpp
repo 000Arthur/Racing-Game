@@ -79,11 +79,25 @@ void ModuleRender::Start_game() {
 void ModuleRender::End_game() {
 
     std::string title = "TOTAL TIME";
+    std::string play = "CLICK ENTER TO START";
+    Vector2 position_play = { 720.0f, 600.0f };
+
     Vector2 position = { 750.0f, 200.0f }; 
     Vector2 position_player1 = { 630.0f, 300.0f }; 
     Vector2 position_player2 = { 1020.0f, 300.0f };
 
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
+
+    float blinkInterval = 0.5f;  // How often the visibility state changes
+    if (blinkTimer.ReadSec() >= blinkInterval)
+    {
+        showText = !showText; // Toggle the visibility state of the text
+        blinkTimer.Start();  // Reset the timer
+    }
+    if (showText)
+    {
+        DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
+    }
 
     for (int i = 0; i < 3; ++i) {
      

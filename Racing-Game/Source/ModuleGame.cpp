@@ -735,7 +735,10 @@ update_status ModuleGame::Update()
 		if (timer >= frameTime) {
 			timer = 0.0f;
 			if(currentFrame<5)currentFrame++;
-			else state = STATE::IN_GAME; 
+			else {
+				currentFrame = 0;
+				state = STATE::IN_GAME;
+			}
 		}
 		break;
 	case IN_GAME:		
@@ -875,6 +878,13 @@ update_status ModuleGame::Update()
 		App->renderer->timer.Stop();
 		App->renderer->timer2.Stop();
 
+		if (IsKeyPressed(KEY_ENTER)) {
+			state = STATE::PRE_START;
+
+			player = new Car(App->physics, 210, 730, this, car1[0], PLAYER_1);
+			player2 = new Car(App->physics, 174, 750, this, car2[0], PLAYER_2);
+		}
+
 		break;
 	default:
 		break;
@@ -901,12 +911,14 @@ update_status ModuleGame::Update()
 
 	if(player->lap < 3)player->Update();
 	else{
+		App->renderer->timer.Restart();
 		App->audio->StopFx(App->audio->engine_fx);
 		App->audio->StopFx(App->audio->bost_fx);
 	}
 
 	if(player2->lap < 3)player2->Update();
 	else {
+		App->renderer->timer2.Restart();
 		App->audio->StopFx(App->audio->engine_fx_2);
 		App->audio->StopFx(App->audio->bost_fx_2);
 	}
