@@ -39,10 +39,6 @@ public:
 public:
 	bool finish = false;
 
-	int player1_lap;
-	int player2_lap;
-
-
 	std::vector<PhysicEntity*> entities;
 	std::vector<Bost*> bosters;
 	

@@ -207,7 +207,7 @@ public:
 		137, 962,
 		136, 908,
 		143, 818,
-		136, 736,
+		136, 736
 	};
 
 	onRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
@@ -215,7 +215,6 @@ public:
 		, texture(_texture)
 	{
 		body->id = ON_ROAD;
-		//2722 x 1466
 	}
 
 	void Update() override
@@ -418,7 +417,6 @@ public:
 		, texture(_texture)
 	{
 		body->id = HIT;
-		//2722 x 1466
 	}
 
 	void Update() override
@@ -436,7 +434,6 @@ class FinishLine : public PhysicEntity {
 public:
 	FinishLine(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
 		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 126, 17, id), _listener) {
-
 	}
 
 	void Update() override
@@ -446,7 +443,6 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
-
 	}
 public:
 	Texture2D texture;
@@ -456,7 +452,6 @@ class Checkpoint : public PhysicEntity {
 public:
 	Checkpoint(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
 		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 126, 126, id), _listener) {
-
 	}
 
 	void Update() override
@@ -466,7 +461,6 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
-
 	}
 public:
 	Texture2D texture;
@@ -476,7 +470,6 @@ class Puddle : public PhysicEntity {
 public:
 	Puddle(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
 		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 45, 90, id), _listener) {
-
 	}
 
 	void Update() override
@@ -486,11 +479,11 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
-
 	}
 public:
 	Texture2D texture;
 };
+
 class Crack : public PhysicEntity {
 public:
 	Crack(ModulePhysics* physics, int _x, int _y, Module* _listener, const Texture2D& _texture, int id)
@@ -506,7 +499,6 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, rotationDegrees + angle, WHITE);
-
 	}
 public:
 	Texture2D texture;
@@ -528,14 +520,11 @@ public:
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
-
 	}
 
 	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
 	{
-
 		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
-
 	}
 public:
 	Texture2D texture;
@@ -577,6 +566,8 @@ public:
 	float MAX_VELOCITY = 2.0f;
 	bool accelerate = false;
 	int cnt = 0;
+
+	int lap = 0;
 };
 
 
@@ -750,7 +741,7 @@ update_status ModuleGame::Update()
 	case IN_GAME:		
 
 		//Player 1 controls
-		if(!player->accelerate){
+		if(!player->accelerate && player->lap < 3){
 			if (IsKeyPressed(KEY_SPACE) && player->BOOST_QUANTITY > 0)
 				App->audio->PlayFx(App->audio->accelerate_fx);
 		
@@ -812,7 +803,7 @@ update_status ModuleGame::Update()
 		limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
 
 		//Player 2 controls
-		if (!player2->accelerate){
+		if (!player2->accelerate && player2->lap < 3){
 			if (IsKeyPressed(KEY_RIGHT_SHIFT) && player->BOOST_QUANTITY > 0){
 				App->audio->PlayFx(App->audio->accelerate_fx_2);
 			}
@@ -834,7 +825,6 @@ update_status ModuleGame::Update()
 				else {
 					vel2 = 0.0f;
 					applyFriction(player2->body->body, FRICTION_COEFFICIENT);
-					App->audio->StopFx(App->audio->engine_fx_2);
 					App->audio->StopFx(App->audio->engine_fx_2);
 				}
 				if (IsKeyPressed(KEY_UP)) {
@@ -877,7 +867,13 @@ update_status ModuleGame::Update()
 
 	break;
 	case END:
+		App->audio->StopFx(App->audio->engine_fx);
+		App->audio->StopFx(App->audio->engine_fx);
+		App->audio->StopFx(App->audio->engine_fx_2);
+		App->audio->StopFx(App->audio->engine_fx_2);
 
+		App->renderer->timer.Stop();
+		App->renderer->timer2.Stop();
 
 		break;
 	default:
@@ -903,9 +899,17 @@ update_status ModuleGame::Update()
 		entities[i]->Update();
 	}
 
-	player->Update();
-	player2->Update();
+	if(player->lap < 3)player->Update();
+	else{
+		App->audio->StopFx(App->audio->engine_fx);
+		App->audio->StopFx(App->audio->bost_fx);
+	}
 
+	if(player2->lap < 3)player2->Update();
+	else {
+		App->audio->StopFx(App->audio->engine_fx_2);
+		App->audio->StopFx(App->audio->bost_fx_2);
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -1005,16 +1009,15 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->renderer->player1_time = lap_time; //Final time
 			printf("Tiempo player 1 %f", App->renderer->player1_time);
 			
-			if (player1_lap < 3)
+			if (player->lap < 3)
 			{
-				App->renderer->timer_1[player1_lap] = lap_time;
+				App->renderer->timer_1[player->lap] = lap_time;
 				App->renderer->timer.Start();
-				player1_lap++;
+				player->lap++;
 			}
-			printf("Tiempo player 1 vuelta %d: %f segundos\n", player1_lap, lap_time);
+			printf("Tiempo player 1 vuelta %d: %f segundos\n", player->lap, lap_time);
 
 			App->renderer->Best_Time();
-
 
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
@@ -1030,17 +1033,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			App->renderer->player2_time = lap_time;
 
-			
-			if (player2_lap < 3)
+			if (player2->lap < 3)
 			{
-				App->renderer->timer_2[player2_lap] = lap_time;
+				App->renderer->timer_2[player2->lap] = lap_time;
 				App->renderer->timer2.Start();
-				player2_lap++;
+				player2->lap++;
 			}
-			printf("Tiempo player 2 vuelta %d: %f segundos\n", player2_lap, lap_time);
+			printf("Tiempo player 2 vuelta %d: %f segundos\n", player2->lap, lap_time);
 			App->renderer->Best_Time();
-
-
 
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
@@ -1050,9 +1050,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			allCheckpointsPassed2 = false;
 		}
 
-		if (player1_lap >= 3 && player2_lap >= 3) {
-			App->audio->PlayFx(App->audio->start_fx);
-
+		if (player->lap >= 3 && player2->lap >= 3) {
 			state = END;
 		}
 
