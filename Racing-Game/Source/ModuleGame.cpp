@@ -877,14 +877,6 @@ update_status ModuleGame::Update()
 	break;
 	case END:
 
-		if (player != nullptr) {
-			delete player;
-			player = nullptr;
-		}
-		if (player2 != nullptr) {
-			delete player2;
-			player2 = nullptr;
-		}
 
 		break;
 	default:
