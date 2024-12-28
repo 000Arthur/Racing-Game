@@ -724,6 +724,7 @@ update_status ModuleGame::Update()
 	case PRE_START:
 			
 		App->audio->PlayFx(App->audio->aplause_fx);
+		App->audio->PlayFx(App->audio->traffic_light_fx);
 
 		//Stop Sounds
 		App->audio->StopFx(App->audio->bost_fx);

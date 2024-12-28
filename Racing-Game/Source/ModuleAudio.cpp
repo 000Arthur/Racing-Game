@@ -76,7 +76,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	{
 		PlayMusicStream(music);
 		LOG("Successfully playing %s", path);
-		SetMusicVolume(music,0.5f); 
+		SetMusicVolume(music,1.0f); 
 	}
 	return true;
 
@@ -159,4 +159,5 @@ void ModuleAudio::SoundsFx()
 
 	start_fx = LoadFx("Assets/Audio/Fx/Start.mp3");
 	aplause_fx = LoadFx("Assets/Audio/Fx/aplause.mp3");
+	traffic_light_fx= LoadFx("Assets/Audio/Fx/traffic light.mp3");
 }

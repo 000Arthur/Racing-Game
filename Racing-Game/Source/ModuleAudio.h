@@ -30,6 +30,7 @@ public:
 
 	unsigned int start_fx;
 	unsigned int aplause_fx;
+	unsigned int traffic_light_fx;
 
 	unsigned int accelerate_fx;
 	unsigned int accelerate_fx_2;
