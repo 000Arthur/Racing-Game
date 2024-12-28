@@ -18,14 +18,13 @@ class Bost;
 class outRoad;
 class onRoad;
 
-enum Enum
-{
+enum Enum{
 	NO_INTERACTION,PLAYER_1, PLAYER_2, 
 	SPEED_BOOST,NITRO_BOOST,HIT, TIRE, FINISH_LINE,CHECK,
-	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD
+	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD,
 };
 
-
+enum STATE{START, IN_GAME, END};
 
 class ModuleGame : public Module
 {
@@ -46,19 +45,21 @@ public:
 	Board* board;
 	onRoad* piano;
 	outRoad* limit;
-	Texture2D car;
-	Texture2D greenCar;
+	Texture2D startLight[6];
+	Texture2D car1[2];
+	Texture2D car2[2];
 	Texture2D tires[3];
 	Texture2D speedBoost;
 	Texture2D nitroBoost;
 
 	Texture2D bike;
 	Texture2D circuit;
+	STATE state;
 
 	int currentFrame = 0;
-	float frameTime = 0.15f;   // Duración de cada frame en segundos
+	float frameTime = 1.0f;   // Duración de cada frame en segundos
 	float timer = 0.0f;
-	Texture2D frames[8];
+	Texture2D frames[6];
 
 	float vel = 0.0f;
 	float vel2 = 0.0f;
@@ -117,7 +118,7 @@ public:
 		{1532, 865},
 		{1556, 865},
 		{1580, 865},
-		{1604, 865},//aqui
+		{1604, 865},
 		{1628, 865},
 		{1652, 865},
 		{1676, 865}
