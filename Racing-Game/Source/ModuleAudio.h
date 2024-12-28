@@ -2,7 +2,7 @@
 
 #include "Module.h"
 
-#define MAX_SOUNDS	16
+#define MAX_SOUNDS	25
 #define DEFAULT_MUSIC_FADE_TIME 2.0f
 
 class ModuleAudio : public Module
@@ -27,6 +27,9 @@ public:
 	void StopFx(unsigned int fx_id);
 	void SoundsFx();
 	void UpdateMusic();
+
+	unsigned int start_fx;
+	unsigned int aplause_fx;
 
 	unsigned int accelerate_fx;
 	unsigned int accelerate_fx_2;

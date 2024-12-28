@@ -14,7 +14,7 @@ ModuleRender::ModuleRender(Application* app, bool start_enabled) : Module(app, s
     background = RAYWHITE;
     timer.Start();
     timer2.Start();
-
+    blinkTimer.Start();
 }
 
 // Destructor
@@ -54,11 +54,89 @@ update_status ModuleRender::Update()
 	return UPDATE_CONTINUE;
 }
 
+void ModuleRender::Start_game() {
+
+    std::string title = "RACING ARCADE";
+    std::string play = "CLICK ENTER TO START";
+
+    Vector2 position = { 590.0f, 500.0f };
+    Vector2 position_play = { 720.0f, 600.0f };
+
+    DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.5f, 1.5f, BLACK);
+
+    float blinkInterval = 0.5f;  // How often the visibility state changes
+    if (blinkTimer.ReadSec() >= blinkInterval)
+    {
+        showText = !showText; // Toggle the visibility state of the text
+        blinkTimer.Start();  // Reset the timer
+    }
+    if (showText)
+    {
+        DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
+    }
+}
+
+void ModuleRender::End_game() {
+
+    std::string title = "TOTAL TIME";
+    Vector2 position = { 750.0f, 200.0f }; // Posición del título de "TOTAL TIME"
+    Vector2 position_player1 = { 630.0f, 300.0f }; // Columna de tiempos para el Player 1
+    Vector2 position_player2 = { 1020.0f, 300.0f }; // Columna de tiempos para el Player 2
+
+    // Dibujar el título en la pantalla
+    DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
+
+    for (int i = 0; i < 3; ++i) {
+     
+            int minutes = static_cast<int>(timer_1[i] / 60);
+            int seconds = static_cast<int>(timer_1[i]) % 60;
+            int milliseconds = static_cast<int>((timer_1[i] - static_cast<int>(timer_1[i])) * 1000);
+
+            // Crear el formato de tiempo: "MM:SS:MMM"
+            std::string time_text =
+                (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+                (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+                (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+
+            // Dibujar el tiempo de la vuelta de Player 1
+            DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
+                { position_player1.x, position_player1.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
+        
+    }
+
+    // Mostrar los tiempos de las vueltas de Player 2
+    for (int i = 0; i < 3; ++i) {
+
+        int minutes = static_cast<int>(timer_2[i] / 60);
+        int seconds = static_cast<int>(timer_2[i]) % 60;
+        int milliseconds = static_cast<int>((timer_2[i] - static_cast<int>(timer_2[i])) * 1000);
+
+        // Crear el formato de tiempo: "MM:SS:MMM"
+        std::string time_text =
+            (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+            (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+            (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+
+        // Dibujar el tiempo de la vuelta de Player 2
+        DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
+            { position_player2.x, position_player2.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
+    }
+
+
+}
+
+
 void ModuleRender::Timer_Player1()
 {
+    if (state == PRE_START || state == START) {
+        time_elapsed1 =0;
+        timer.Start();
 
-    // Display the elapsed time
-    time_elapsed1 = timer.ReadSec();
+    }
+    else {
+        // Display the elapsed time
+        time_elapsed1 = timer.ReadSec();
+    }
 
     // Calculate minutes, seconds, and milliseconds
     int minutes = static_cast<int>(time_elapsed1) / 60;
@@ -78,10 +156,14 @@ void ModuleRender::Timer_Player1()
 
 void ModuleRender::Timer_Player2()
 {
+    if (state == PRE_START || state == START) {
+        time_elapsed2 = 0;
+        timer2.Start();
 
-    // Display the elapsed time
-    time_elapsed2 = timer2.ReadSec();
-
+    }
+    else {
+        time_elapsed2 = timer2.ReadSec();
+    }
 
     // Calculate minutes, seconds, and milliseconds
     int minutes = static_cast<int>(time_elapsed2) / 60;
@@ -100,28 +182,27 @@ void ModuleRender::Timer_Player2()
 
 void ModuleRender::Best_Time()
 {
-    int minutes, seconds, milliseconds;
-    if (player1_time < player2_time)
-    {
-         minutes = static_cast<int>(player1_time) / 60;
-         seconds = static_cast<int>(player1_time) % 60;
-         milliseconds = static_cast<int>((player1_time - static_cast<int>(player1_time)) * 1000);
+    int minutes = 0, seconds = 0, milliseconds = 0;
+    static double best_time = 1000000; 
+    // Comparar los tiempos cada vez que los jugadores finalizan una vuelta
+    if (player1_time > 0 && player1_time < best_time) {
+        best_time = player1_time;
+    }
+    if (player2_time > 0 && player2_time < best_time) {
+        best_time = player2_time;
+    }
 
-      
-    }
-    else {
-         minutes = static_cast<int>(player2_time) / 60;
-         seconds = static_cast<int>(player2_time) % 60;
-         milliseconds = static_cast<int>((player2_time - static_cast<int>(player2_time)) * 1000);
-    }
+    minutes = static_cast<int>(best_time) / 60;
+    seconds = static_cast<int>(best_time) % 60;
+    milliseconds = static_cast<int>((best_time - static_cast<int>(best_time)) * 1000);
 
     std::string time_text =
-        (minutes < 10 ? "BEST TIME: 0" : "") + std::to_string(minutes) + ":" +
+        (minutes < 10 ? "BEST TIME: 0" : "BEST TIME: ") + std::to_string(minutes) + ":" +
         (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
-    // Display the formatted time on the screen
     DrawText(time_text.c_str(), 770, 50, myFont, 1, BLACK);
+
 }
 
 // PostUpdate present buffer to screen
@@ -131,6 +212,13 @@ update_status ModuleRender::PostUpdate()
 
     ClearBackground(background);
 
+    if (state == PRE_START) {
+        Start_game();
+    }
+
+    if (state == END) {
+        End_game();
+    }
     Timer_Player1(); 
  
     Timer_Player2();

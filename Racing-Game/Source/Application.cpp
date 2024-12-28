@@ -8,6 +8,8 @@
 
 #include "Application.h"
 
+STATE state = STATE::PRE_START;
+
 Application::Application()
 {
 	window = new ModuleWindow(this);

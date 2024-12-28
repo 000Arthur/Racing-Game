@@ -29,6 +29,8 @@ enum update_status
 	UPDATE_ERROR
 };
 
+enum STATE { PRE_START,START, IN_GAME, END };
+extern STATE state;
 // Configuration -----------
 #define SCREEN_WIDTH		 1920
 #define SCREEN_HEIGHT		  1120

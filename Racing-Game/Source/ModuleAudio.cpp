@@ -128,6 +128,8 @@ void ModuleAudio::StopFx(unsigned int fx_id)
 
 void ModuleAudio::SoundsFx()
 {
+
+
 	accelerate_fx = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 
@@ -155,4 +157,6 @@ void ModuleAudio::SoundsFx()
 	bost_fx = LoadFx("Assets/Audio/Fx/bost.wav");
 	bost_fx_2 = LoadFx("Assets/Audio/Fx/bost.wav");
 
+	start_fx = LoadFx("Assets/Audio/Fx/Start.mp3");
+	aplause_fx = LoadFx("Assets/Audio/Fx/aplause.mp3");
 }

@@ -597,6 +597,7 @@ bool ModuleGame::Start()
 	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
 	App->audio->PlayMusic("Assets/Audio/Music/background.ogg", 1.0f);
+	App->audio->PlayFx(App->audio->start_fx);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	speedBoost = LoadTexture("Assets/SpeedBoost.png");
@@ -650,7 +651,6 @@ bool ModuleGame::Start()
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
 
-	//state = STATE::IN_GAME;
 	return ret;
 }
 
@@ -717,18 +717,36 @@ update_status ModuleGame::Update()
 	App->audio->UpdateMusic();
 
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y); // DELETE LATER
-	
+
+
 	switch (state)
 	{
+	case PRE_START:
+			
+		App->audio->PlayFx(App->audio->aplause_fx);
+
+		//Stop Sounds
+		App->audio->StopFx(App->audio->bost_fx);
+		App->audio->StopFx(App->audio->accelerate_fx);
+		App->audio->StopFx(App->audio->bost_fx_2);
+		App->audio->StopFx(App->audio->accelerate_fx_2);
+
+		if (IsKeyPressed(KEY_ENTER)) {
+			state = STATE::START;
+		}
+		break;
+
 	case START:
+		App->audio->StopFx(App->audio->start_fx);
+
 		timer += GetFrameTime();
 		if (timer >= frameTime) {
 			timer = 0.0f;
 			if(currentFrame<5)currentFrame++;
-			else state = STATE::IN_GAME;
+			else state = STATE::IN_GAME; 
 		}
 		break;
-	case IN_GAME:
+	case IN_GAME:		
 
 		//Player 1 controls
 		if(!player->accelerate){
@@ -859,9 +877,14 @@ update_status ModuleGame::Update()
 	break;
 	case END:
 
-
-
-
+		if (player != nullptr) {
+			delete player;
+			player = nullptr;
+		}
+		if (player2 != nullptr) {
+			delete player2;
+			player2 = nullptr;
+		}
 
 		break;
 	default:
@@ -983,10 +1006,23 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 
 		if ((bodyA->id == PLAYER_1) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed){
-			App->renderer->player1_time = App->renderer->timer.ReadSec(); //Final time
-			printf("Tiempo player 1 %f", App->renderer->player1_time);
+			double lap_time = App->renderer->timer.ReadSec();
 			App->renderer->timer.Restart();
-			App->renderer->timer.Start();
+
+			App->renderer->player1_time = lap_time; //Final time
+			printf("Tiempo player 1 %f", App->renderer->player1_time);
+			
+			if (player1_lap < 3)
+			{
+				App->renderer->timer_1[player1_lap] = lap_time;
+				App->renderer->timer.Start();
+				player1_lap++;
+			}
+			printf("Tiempo player 1 vuelta %d: %f segundos\n", player1_lap, lap_time);
+
+			App->renderer->Best_Time();
+
+
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates.size(); ++i)
@@ -996,15 +1032,38 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 
 		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2){
-			App->renderer->player2_time = App->renderer->timer2.ReadSec(); //Final time
+			double lap_time = App->renderer->timer2.ReadSec(); // Tiempo total desde el inicio de la vuelta
 			App->renderer->timer2.Restart();
-			App->renderer->timer2.Start();
+
+			App->renderer->player2_time = lap_time;
+
+			
+			if (player2_lap < 3)
+			{
+				App->renderer->timer_2[player2_lap] = lap_time;
+				App->renderer->timer2.Start();
+				player2_lap++;
+			}
+			printf("Tiempo player 2 vuelta %d: %f segundos\n", player2_lap, lap_time);
+			App->renderer->Best_Time();
+
+
+
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates2.size(); ++i)
 				checkpointStates2[i] = false;
 			
 			allCheckpointsPassed2 = false;
+		}
+
+		if (player1_lap >= 3 && player2_lap >= 3) {
+			state = END;
+		}
+
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE)) {
+			App->audio->PlayFx(App->audio->aplause_fx);
+
 		}
 	}
 }

@@ -21,19 +21,29 @@ public:
 	bool Draw(Texture2D texture, int x, int y, const Rectangle* section = NULL, double angle = 0, int pivot_x = 0, int pivot_y = 0) const;
     bool DrawText(const char* text, int x, int y, Font font, int spacing, Color tint) const;
 
+	void Start_game();
+	void End_game();
 	void Timer_Player1();
 	void Timer_Player2();
 	void Best_Time();
 
 public:
 
+
+	float timer_1[3];
+	float timer_2[3];
+
+	Timer blinkTimer;
 	Timer timer;
 	Timer timer2;
+	bool showText = false;
+
 	double game_timer = 0.0;
 	double time_elapsed1;
 	double time_elapsed2;
-	double player1_time = 0.0;
-	double player2_time = 0.0;
+	double player1_time;
+	double player2_time;
+
 
 	Font myFont;
 

@@ -24,7 +24,6 @@ enum Enum{
 	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD,
 };
 
-enum STATE{START, IN_GAME, END};
 
 class ModuleGame : public Module
 {
@@ -38,6 +37,11 @@ public:
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
 public:
+	bool finish = false;
+
+	int player1_lap;
+	int player2_lap;
+
 
 	std::vector<PhysicEntity*> entities;
 	std::vector<Bost*> bosters;
@@ -54,7 +58,6 @@ public:
 
 	Texture2D bike;
 	Texture2D circuit;
-	STATE state;
 
 	int currentFrame = 0;
 	float frameTime = 1.0f;   // Duración de cada frame en segundos
