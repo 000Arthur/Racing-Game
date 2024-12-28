@@ -76,7 +76,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	{
 		PlayMusicStream(music);
 		LOG("Successfully playing %s", path);
-		SetMusicVolume(music,1.0f); 
+		SetMusicVolume(music,0.5f); 
 	}
 	return true;
 
