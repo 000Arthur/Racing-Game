@@ -557,6 +557,9 @@ public:
 	{
 		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
 	}
+	void SetPos(float x, float y) {
+		body->body->SetTransform({ x,y }, 0.0f);
+	}
 public:
 	Texture2D texture;
 
@@ -618,8 +621,8 @@ bool ModuleGame::Start()
 	limit = new outRoad(App->physics, 0, 0, this, circuit);
 	piano = new onRoad(App->physics, 0, 0, this, circuit);
 
-	player = new Car(App->physics, 210, 730, this, car1[0], PLAYER_1);
-	player2 = new Car(App->physics, 174, 750, this, car2[0], PLAYER_2);
+	player = new Car(App->physics, P1pos.x, P1pos.y, this, car1[0], PLAYER_1);
+	player2 = new Car(App->physics, P2pos.x, P2pos.y, this, car2[0], PLAYER_2);
 
 	entities.push_back(player);
 
@@ -641,6 +644,7 @@ bool ModuleGame::Start()
 	
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
+	state = STATE::END;
 
 	return ret;
 }
@@ -878,11 +882,11 @@ update_status ModuleGame::Update()
 		App->renderer->timer.Stop();
 		App->renderer->timer2.Stop();
 
-		if (IsKeyPressed(KEY_ENTER)) {
-			state = STATE::PRE_START;
+		if (IsKeyDown(KEY_ENTER)) {
 
-			player = new Car(App->physics, 210, 730, this, car1[0], PLAYER_1);
-			player2 = new Car(App->physics, 174, 750, this, car2[0], PLAYER_2);
+			player->SetPos((P1pos.x * 2) / 100, (P1pos.y * 2) / 100);
+			player2->SetPos((P2pos.x * 2) / 100, (P2pos.y * 2) / 100);
+			state = STATE::PRE_START;
 		}
 
 		break;

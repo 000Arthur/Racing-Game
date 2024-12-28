@@ -78,7 +78,10 @@ public:
 
 	Car* player;
 	Car* player2;
-	//Bost* impulser;
+	
+	Vector2 P1pos = {210.0f, 730.0f};
+	Vector2 P2pos = {174.0f, 750.0f};
+
 	Bike* cono;
 
 	vec2<int> ray;
