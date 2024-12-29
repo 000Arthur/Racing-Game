@@ -38,6 +38,7 @@ public:
 
 public:
 	bool finish = false;
+	bool player1_is_first = false;
 
 	std::vector<PhysicEntity*> entities;
 	std::vector<Bost*> bosters;
