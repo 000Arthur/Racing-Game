@@ -902,10 +902,10 @@ update_status ModuleGame::Update()
 	if(state==STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE);
 
 	int rectWidth = player->BOOST_QUANTITY * 20; // Ancho del rectángulo
-	DrawRectangle(rectX, rectY, rectWidth, rectHeight, RED);
+	DrawRectangle(rectX, rectY, rectWidth, rectHeight, BEIGE);
 
 	rectWidth = player2->BOOST_QUANTITY * 20; // Ancho del rectángulo
-	DrawRectangle(rectX + 1200, rectY, rectWidth, rectHeight, BLUE);
+	DrawRectangle(rectX + 1200, rectY, rectWidth, rectHeight, LIGHTBROWN);
 
 	for (int i = 1; i < entitieQ; i++) {
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
