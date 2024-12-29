@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include <vector>
 
 #define MAX_SOUNDS	25
 #define DEFAULT_MUSIC_FADE_TIME 2.0f
@@ -27,6 +28,7 @@ public:
 	void StopFx(unsigned int fx_id);
 	void SoundsFx();
 	void UpdateMusic();
+	void ChangeMusic();
 
 	unsigned int start_fx;
 	unsigned int aplause_fx;
@@ -37,9 +39,6 @@ public:
 
 	unsigned int collision_cars_fx;
 	unsigned int collision_object_fx;
-
-	unsigned int start_engines_fx;
-	unsigned int start_engines_fx_2;
 
 	unsigned int engine_fx;
 	unsigned int engine_fx_2;
@@ -56,6 +55,15 @@ public:
 	unsigned int bost_fx;
 	unsigned int bost_fx_2;
 
+	//List music
+	int current_music_index = -1;
+	std::vector<const char*> music_paths = {
+		"Assets/Audio/Music/background.ogg",
+		"Assets/Audio/Music/Music1.mp3",
+		"Assets/Audio/Music/Music3.mp3",
+		"Assets/Audio/Music/Music6.mp3",
+		"Assets/Audio/Music/Music8.mp3"
+	};
 private:
 	Music music;
 	Sound fx[MAX_SOUNDS];
