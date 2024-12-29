@@ -157,9 +157,6 @@ void ModuleAudio::SoundsFx()
 
 	collision_object_fx = LoadFx("Assets/Audio/Fx/wheels crash.mp3");
 
-	start_engines_fx = LoadFx("Assets/Audio/Fx/motor_formula_1.mp3");
-	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/motor_formula_1.mp3");
-
 	engine_fx = LoadFx("Assets/Audio/Fx/engine.mp3");
 	engine_fx_2 = LoadFx("Assets/Audio/Fx/engine.mp3");
 

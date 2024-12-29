@@ -40,9 +40,6 @@ public:
 	unsigned int collision_cars_fx;
 	unsigned int collision_object_fx;
 
-	unsigned int start_engines_fx;
-	unsigned int start_engines_fx_2;
-
 	unsigned int engine_fx;
 	unsigned int engine_fx_2;
 
