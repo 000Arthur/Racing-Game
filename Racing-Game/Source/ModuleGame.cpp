@@ -590,7 +590,10 @@ bool ModuleGame::Start()
 	checkpointStates.resize(checkpointPos.size(), false); //Player 1
 	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
-	App->audio->PlayMusic("Assets/Audio/Music/background.ogg", 1.0f);
+
+	App->audio->PlayMusic(App->audio->music_paths[0], 1.0f);
+	App->audio->current_music_index = 0;
+
 	App->audio->PlayFx(App->audio->start_fx);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -644,7 +647,6 @@ bool ModuleGame::Start()
 	
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
-	state = STATE::END;
 
 	return ret;
 }
@@ -713,11 +715,14 @@ update_status ModuleGame::Update()
 
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y); // DELETE LATER
 
-
 	switch (state)
 	{
 	case PRE_START:
-			
+		
+		if (IsKeyPressed(KEY_M)) {
+			App->audio->ChangeMusic();
+		}
+
 		App->audio->PlayFx(App->audio->aplause_fx);
 		App->audio->PlayFx(App->audio->traffic_light_fx);
 
@@ -730,9 +735,15 @@ update_status ModuleGame::Update()
 		if (IsKeyPressed(KEY_ENTER)) {
 			state = STATE::START;
 		}
+		
 		break;
 
 	case START:
+
+		if (IsKeyPressed(KEY_M)) {
+			App->audio->ChangeMusic();
+		}
+
 		App->audio->StopFx(App->audio->start_fx);
 
 		timer += GetFrameTime();
@@ -745,8 +756,12 @@ update_status ModuleGame::Update()
 			}
 		}
 		break;
-	case IN_GAME:		
 
+	case IN_GAME:
+
+		if (IsKeyPressed(KEY_M)) {
+			App->audio->ChangeMusic();
+		}
 		//Player 1 controls
 		if(!player->accelerate && player->lap < 3){
 			if (IsKeyPressed(KEY_SPACE) && player->BOOST_QUANTITY > 0)
@@ -833,6 +848,7 @@ update_status ModuleGame::Update()
 					vel2 = 0.0f;
 					applyFriction(player2->body->body, FRICTION_COEFFICIENT);
 					App->audio->StopFx(App->audio->engine_fx_2);
+					App->audio->StopFx(App->audio->in_Reverse_fx_2);
 				}
 				if (IsKeyPressed(KEY_UP)) {
 					App->audio->StopFx(App->audio->in_Reverse_fx_2);
@@ -874,6 +890,9 @@ update_status ModuleGame::Update()
 
 	break;
 	case END:
+		if (IsKeyPressed(KEY_M)) {
+			App->audio->ChangeMusic();
+		}
 		App->audio->StopFx(App->audio->engine_fx);
 		App->audio->StopFx(App->audio->engine_fx);
 		App->audio->StopFx(App->audio->engine_fx_2);
