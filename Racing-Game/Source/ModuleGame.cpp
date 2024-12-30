@@ -802,14 +802,12 @@ update_status ModuleGame::Update()
 		}
 		break;
 
-
-		pathing(npc, path[npc->counter]);
-
 	case IN_GAME:
-
 		if (IsKeyPressed(KEY_M)) {
 			App->audio->ChangeMusic();
 		}
+		//enemy move
+		pathing(npc, path[npc->counter]);
 
 		//Player 1 controls
 		if(!player->accelerate && player->lap < 3){
