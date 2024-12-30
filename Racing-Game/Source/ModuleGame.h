@@ -20,7 +20,7 @@ class onRoad;
 
 enum Enum{
 	NO_INTERACTION,PLAYER_1, PLAYER_2, 
-	SPEED_BOOST,NITRO_BOOST,HIT, TIRE, FINISH_LINE,CHECK,
+	SPEED_BOOST,NITRO_BOOST, HIT, TIRE, FINISH_LINE,CHECK,
 	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD,
 };
 
@@ -38,6 +38,7 @@ public:
 
 public:
 	bool finish = false;
+	bool player1_is_first = false;
 
 	std::vector<PhysicEntity*> entities;
 	std::vector<Bost*> bosters;

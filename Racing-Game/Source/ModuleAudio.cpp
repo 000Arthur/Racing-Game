@@ -29,6 +29,25 @@ bool ModuleAudio::Init()
 	return ret;
 }
 
+void ModuleAudio::ChangeMusic()
+{
+	if (IsMusicReady(music)) {
+		StopMusicStream(music); // Stop the current music stream
+		UnloadMusicStream(music);   // Unload the current music to free resources
+	}
+
+	// Change to the next music index
+	current_music_index = (current_music_index + 1) % music_paths.size();
+
+	// Load and play the new music
+	music = LoadMusicStream(music_paths[current_music_index]);
+	if (IsMusicReady(music)) {
+		PlayMusicStream(music); // Start the new music stream
+		SetMusicVolume(music, 0.5f);
+		LOG("Changing music to: %s", music_paths[current_music_index]);
+	}
+}
+
 void ModuleAudio::UpdateMusic()
 {
 	if (IsMusicReady(music)) {
@@ -137,9 +156,6 @@ void ModuleAudio::SoundsFx()
 	collision_cars_fx = LoadFx("Assets/Audio/Fx/car crash.mp3");
 
 	collision_object_fx = LoadFx("Assets/Audio/Fx/wheels crash.mp3");
-
-	start_engines_fx = LoadFx("Assets/Audio/Fx/engine-start.mp3");
-	start_engines_fx_2 = LoadFx("Assets/Audio/Fx/engine-start.mp3");
 
 	engine_fx = LoadFx("Assets/Audio/Fx/engine.mp3");
 	engine_fx_2 = LoadFx("Assets/Audio/Fx/engine.mp3");

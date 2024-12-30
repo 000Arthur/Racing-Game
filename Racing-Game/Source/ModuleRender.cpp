@@ -221,6 +221,34 @@ void ModuleRender::Best_Time()
 
 }
 
+void ModuleRender::Leaderboard()
+{
+    // Coordinates for the fixed text
+    Vector2 leaderboard_rank1_pos = { 1420, 200 };
+    Vector2 leaderboard_rank2_pos = { 1420, 230 };
+
+    // Coordinates for the dynamic text
+    Vector2 leaderboard_player1_pos = { 1500, 230 };
+    Vector2 leaderboard_player2_pos = { 1500, 200 };
+
+    // Draw the fixed text
+    DrawTextEx(myFont, "1st", leaderboard_rank1_pos, myFont.baseSize, 1.0f, WHITE);
+    DrawTextEx(myFont, "2nd", leaderboard_rank2_pos, myFont.baseSize, 1.0f, WHITE);
+
+    
+    bool player1_is_first = App->scene_intro->player1_is_first;
+
+    
+    std::string first_position = (player1_is_first ? "Player 2" : "Player 1");
+    std::string second_position = (player1_is_first ? "Player 1" : "Player 2");
+
+    // Draw the dynamic text
+    DrawTextEx(myFont, first_position.c_str(), leaderboard_player1_pos, myFont.baseSize, 1.0f, (player1_is_first ? BLUE : RED));
+    DrawTextEx(myFont, second_position.c_str(), leaderboard_player2_pos, myFont.baseSize, 1.0f, (player1_is_first ? RED : BLUE));
+}
+
+
+
 // PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
 {
@@ -240,6 +268,8 @@ update_status ModuleRender::PostUpdate()
     Timer_Player2();
 
     Best_Time();
+
+    Leaderboard();
     
     // Draw everything in our batch!
     DrawFPS(10, 10);

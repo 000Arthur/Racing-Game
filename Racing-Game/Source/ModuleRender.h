@@ -26,6 +26,7 @@ public:
 	void Timer_Player1();
 	void Timer_Player2();
 	void Best_Time();
+	void Leaderboard();
 
 public:
 
