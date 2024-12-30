@@ -1034,47 +1034,28 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		else if (bodyA->id == PLAYER_2 && bodyB->id == OUT_ROAD)
 			player2->MAX_VELOCITY = 1.0f;
 
-		for (int i = 0; i < checkpointPos.size(); ++i) {
-			if (bodyA->id == PLAYER_1 && bodyB->id == CHECK + i) { 
-				if (!checkpointStates[i]) { 
-					checkpointStates[i] = true; 
-					player->checkpointIndex = i;
-
-					// If Player 1 completes a lap
-					if (i == checkpointPos.size() - 1) {
-						player->lapsCompleted++; // Increment laps completed
-						std::fill(checkpointStates.begin(), checkpointStates.end(), false); 
-						printf("Player 1 completed a lap (%d laps)\n", player->lapsCompleted); 
+		for (int i = 0; i < checkpointStates.size(); ++i)
+		{
+			if (bodyA->id == PLAYER_1 && bodyB->id == CHECK + i) // Checkpoint IDs start at 9
+			{
+				if (i == 0 || checkpointStates[i - 1]) // Ensure previous checkpoints are activated
+				{
+					if (!checkpointStates[i]) {
+						checkpointStates[i] = true;
+						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
+						printf("Checkpoint %d passed!\n", i + 1);
 					}
-
-					App->audio->PlayFx(App->audio->checkpoint_fx); // Play checkpoint sound
-				}
-			}
-
-			if (bodyA->id == PLAYER_2 && bodyB->id == CHECK + i) { 
-				if (!checkpointStates2[i]) { 
-					checkpointStates2[i] = true; 
-					player2->checkpointIndex = i; 
-
-					// If Player 2 completes a lap
-					if (i == checkpointPos.size() - 1) {
-						player2->lapsCompleted++; // Increment laps completed
-						std::fill(checkpointStates2.begin(), checkpointStates2.end(), false); 
-						printf("Player 2 completed a lap (%d laps)\n", player2->lapsCompleted); 
-					}
-
-					App->audio->PlayFx(App->audio->checkpoint_fx); // Play checkpoint sound
+					else printf("Checkpoint %d ignore!\n", i + 1);
+					break;
 				}
 			}
 		}
-
-
 
 		bool allCheckpointsPassed = true;
 		for (bool state : checkpointStates) {
 			if (!state) {
 				allCheckpointsPassed = false;
-				break;  
+				break;
 			}
 		}
 
@@ -1099,58 +1080,35 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		for (bool state : checkpointStates2) {
 			if (!state) {
 				allCheckpointsPassed2 = false;
-				break; 
+				break;
 			}
 		}
 
-		if ((bodyA->id == PLAYER_1) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed){
-			double lap_time = App->renderer->timer.ReadSec();
-			App->renderer->timer.Restart();
-
-			App->renderer->player1_time = lap_time; //Final time
+		if ((bodyA->id == PLAYER_1) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed) {
+			App->renderer->player1_time = App->renderer->timer.ReadSec(); //Final time
 			printf("Tiempo player 1 %f", App->renderer->player1_time);
-			
-			if (player->lap < 3)
-			{
-				App->renderer->timer_1[player->lap] = lap_time;
-				App->renderer->timer.Start();
-				player->lap++;
-			}
-			printf("Tiempo player 1 vuelta %d: %f segundos\n", player->lap, lap_time);
-
-			App->renderer->Best_Time();
-
+			App->renderer->timer.Restart();
+			App->renderer->timer.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
+			player->lap++;
 
 			for (int i = 0; i < checkpointStates.size(); ++i)
-				checkpointStates[i] = false;				
-			
+				checkpointStates[i] = false;
+
 			allCheckpointsPassed = false;
 		}
 
-		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2){
-			double lap_time = App->renderer->timer2.ReadSec(); 
+		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2) {
+			App->renderer->player2_time = App->renderer->timer2.ReadSec(); //Final time
 			App->renderer->timer2.Restart();
-
-			App->renderer->player2_time = lap_time;
-
-			if (player2->lap < 3)
-			{
-				App->renderer->timer_2[player2->lap] = lap_time;
-				App->renderer->timer2.Start();
-				player2->lap++;
-			}
-			printf("Tiempo player 2 vuelta %d: %f segundos\n", player2->lap, lap_time);
-			App->renderer->Best_Time();
-
+			App->renderer->timer2.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
-
+			player2->lap++;
 			for (int i = 0; i < checkpointStates2.size(); ++i)
 				checkpointStates2[i] = false;
-			
+
 			allCheckpointsPassed2 = false;
 		}
-
 		if (player->lap >= 3 && player2->lap >= 3) {
 			state = END;
 		}
@@ -1159,58 +1117,54 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(App->audio->aplause_fx);
 
 		}
-		// One of the players have completed more laps
-		if (player->lapsCompleted > player2->lapsCompleted) {
-			
-			this->player1_is_first = true;
-		}
-		else if (player->lapsCompleted < player2->lapsCompleted) {
-			
-			this->player1_is_first = false;
-		}
-		else {
-			// Both players have completed the same number of laps
-			if (player->checkpointIndex > player2->checkpointIndex) {
-				
-				this->player1_is_first = true;
-			}
-			else if (player->checkpointIndex < player2->checkpointIndex) {
-				
-				this->player1_is_first = false;
-			}
-			else {
-				// Both players are at the same checkpoint
-				Vector2 nextCheckpointPlayer1 = checkpointPos[(player->checkpointIndex + 1) % checkpointPos.size()];
-				Vector2 nextCheckpointPlayer2 = checkpointPos[(player2->checkpointIndex + 1) % checkpointPos.size()];
+		//// One of the players have completed more laps
+		//if (player->lapsCompleted > player2->lapsCompleted) {
+		//	
+		//	this->player1_is_first = true;
+		//}
+		//else if (player->lapsCompleted < player2->lapsCompleted) {
+		//	
+		//	this->player1_is_first = false;
+		//}
+		//else {
+		//	// Both players have completed the same number of laps
+		//	if (player->checkpointIndex > player2->checkpointIndex) {
+		//		
+		//		this->player1_is_first = true;
+		//	}
+		//	else if (player->checkpointIndex < player2->checkpointIndex) {
+		//		
+		//		this->player1_is_first = false;
+		//	}
+		//	else {
+		//		// Both players are at the same checkpoint
+		//		Vector2 nextCheckpointPlayer1 = checkpointPos[(player->checkpointIndex + 1) % checkpointPos.size()];
+		//		Vector2 nextCheckpointPlayer2 = checkpointPos[(player2->checkpointIndex + 1) % checkpointPos.size()];
 
-				int x1, y1, x2, y2;
-				player->body->GetPhysicPosition(x1, y1); 
-				player2->body->GetPhysicPosition(x2, y2); 
+		//		int x1, y1, x2, y2;
+		//		player->body->GetPhysicPosition(x1, y1); 
+		//		player2->body->GetPhysicPosition(x2, y2); 
 
-				Vector2 player1Pos = { (float)x1, (float)y1 }; 
-				Vector2 player2Pos = { (float)x2, (float)y2 }; 
+		//		Vector2 player1Pos = { (float)x1, (float)y1 }; 
+		//		Vector2 player2Pos = { (float)x2, (float)y2 }; 
 
-				float distancePlayer1 = Vector2Distance(player1Pos, nextCheckpointPlayer1); 
-				float distancePlayer2 = Vector2Distance(player2Pos, nextCheckpointPlayer2); 
+		//		float distancePlayer1 = Vector2Distance(player1Pos, nextCheckpointPlayer1); 
+		//		float distancePlayer2 = Vector2Distance(player2Pos, nextCheckpointPlayer2); 
 
-				if (distancePlayer1 < distancePlayer2) {
-					
-					this->player1_is_first = true;
-				}
-				else if (distancePlayer1 > distancePlayer2) {
-					
-					this->player1_is_first = false;
-				}
-				else {
-					
-					this->player1_is_first = true;
-				}
-			}
-		}
-
-
-
-
+		//		if (distancePlayer1 < distancePlayer2) {
+		//			
+		//			this->player1_is_first = true;
+		//		}
+		//		else if (distancePlayer1 > distancePlayer2) {
+		//			
+		//			this->player1_is_first = false;
+		//		}
+		//		else {
+		//			
+		//			this->player1_is_first = true;
+		//		}
+		//	}
+		//}
 	}
 }
 
