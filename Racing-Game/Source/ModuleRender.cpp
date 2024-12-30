@@ -3,6 +3,8 @@
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include "ModuleGame.h"
+#include "ModuleAudio.h"
+
 #include "Timer.h"
 
 #include <math.h>
@@ -52,6 +54,35 @@ update_status ModuleRender::Update()
     BeginDrawing();
 
 	return UPDATE_CONTINUE;
+}
+
+void ModuleRender::Musicboard() {
+
+    std::string music;
+
+    if (App->audio->current_music_index == 0) 
+    {
+        music = " -- Wind --";
+    }
+    else if (App->audio->current_music_index == 1)
+    {
+        music = "-- Horizon --";
+    }
+    else if (App->audio->current_music_index == 2)
+    {
+        music = "-- Voyage --";
+    }
+    else if (App->audio->current_music_index == 3)
+    {
+        music = "-- Route --";
+    }
+    else if (App->audio->current_music_index == 4)
+    {
+        music = "-- Night --";
+    }
+
+    DrawText(music.c_str(), 80, 160, myFont, 1, WHITE);
+  
 }
 
 void ModuleRender::Start_game() {
@@ -257,12 +288,15 @@ update_status ModuleRender::PostUpdate()
     ClearBackground(background);
 
     if (state == PRE_START) {
+        Musicboard();
         Start_game();
     }
 
     if (state == END) {
+        Musicboard();
         End_game();
     }
+    Musicboard();
     Timer_Player1(); 
  
     Timer_Player2();

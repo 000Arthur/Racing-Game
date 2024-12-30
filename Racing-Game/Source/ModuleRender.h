@@ -28,6 +28,8 @@ public:
 	void Best_Time();
 	void Leaderboard();
 
+	void Musicboard();
+
 public:
 
 
