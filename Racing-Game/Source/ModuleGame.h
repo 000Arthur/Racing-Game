@@ -48,6 +48,7 @@ public:
 	Texture2D startLight[6];
 	Texture2D car1[2];
 	Texture2D car2[2];
+	Texture2D car3[2];
 	Texture2D tires[3];
 	Texture2D speedBoost;
 	Texture2D nitroBoost;
@@ -62,6 +63,8 @@ public:
 
 	float vel = 0.0f;
 	float vel2 = 0.0f;
+	float vel3 = 0.0f;
+
 
 	const float FRICTION_COEFFICIENT = 0.2f;
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
@@ -78,7 +81,20 @@ public:
 
 	Car* player;
 	Car* player2;
-	
+	Car* npc;
+
+	std::vector<Vector2> path = {
+		{120, 140},
+		{305, 315},
+		{480, 490},
+		{745, 762},
+		{1120, 1220},
+		{1850,1890},
+		{1940,2030},
+		{2150,2245},
+		{2390,2390}
+	};
+
 	Vector2 P1pos = {210.0f, 730.0f};
 	Vector2 P2pos = {174.0f, 750.0f};
 

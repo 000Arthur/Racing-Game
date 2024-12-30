@@ -569,6 +569,7 @@ public:
 	float MAX_VELOCITY = 2.0f;
 	bool accelerate = false;
 	int cnt = 0;
+	int counter = 0;
 
 	int lap = 0;
 };
@@ -603,6 +604,9 @@ bool ModuleGame::Start()
 	car1[0] = LoadTexture("Assets/Car10.png");
 	car1[1] = LoadTexture("Assets/Car11.png");
 
+	car3[0] = LoadTexture("Assets/Car30.png");
+	car3[1] = LoadTexture("Assets/Car31.png");
+
 	circuit = LoadTexture("Assets/HockenHaum.png");
 	circuit.width = 1280/1.3;
 	circuit.height = 720/1.2;
@@ -623,6 +627,7 @@ bool ModuleGame::Start()
 
 	player = new Car(App->physics, P1pos.x, P1pos.y, this, car1[0], PLAYER_1);
 	player2 = new Car(App->physics, P2pos.x, P2pos.y, this, car2[0], PLAYER_2);
+	npc = new Car(App->physics, P1pos.x, P1pos.y+40, this, car3[0], 20);
 
 	entities.push_back(player);
 
@@ -644,7 +649,6 @@ bool ModuleGame::Start()
 	
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
-	state = STATE::END;
 
 	return ret;
 }
@@ -700,6 +704,33 @@ void applyFriction(b2Body* body, float frictionCoefficient) {
 }
 
 // Update: draw background
+void pathing(Car* NPC, Vector2 path) {
+
+	b2Vec2 f = NPC->body->body->GetWorldVector(b2Vec2(0.0f, -2.0f));
+	NPC->body->body->ApplyForceToCenter(f, true);
+	
+	if (NPC->cnt > path.x && NPC->counter >= 8) {
+		NPC->cnt = 0;
+		NPC->counter = 0;
+	}
+
+	else if (NPC->cnt > path.x && NPC->cnt < path.y && (NPC->counter == 3 || NPC->counter == 6)){
+		NPC->body->body->ApplyTorque(-0.2f, true);
+	}
+	else if (NPC->cnt > path.x && NPC->cnt < path.y) {
+		NPC->body->body->ApplyTorque(0.2f, true);
+	}
+	else {
+		double r = NPC->body->body->GetAngularVelocity();
+		NPC->body->body->ApplyTorque(-r / 100, true);
+	}
+	if (NPC->cnt > path.y) NPC->counter++;
+
+	NPC->cnt++;
+	limitVelocity(NPC->body->body, NPC->MAX_VELOCITY);
+	limitAngularVelocity(NPC->body->body, 1.0f);
+}
+
 update_status ModuleGame::Update()
 {
 	vec2i mouse;
@@ -746,6 +777,8 @@ update_status ModuleGame::Update()
 		}
 		break;
 	case IN_GAME:		
+
+		pathing(npc, path[npc->counter]);
 
 		//Player 1 controls
 		if(!player->accelerate && player->lap < 3){
@@ -883,7 +916,6 @@ update_status ModuleGame::Update()
 		App->renderer->timer2.Stop();
 
 		if (IsKeyDown(KEY_ENTER)) {
-
 			player->SetPos((P1pos.x * 2) / 100, (P1pos.y * 2) / 100);
 			player2->SetPos((P2pos.x * 2) / 100, (P2pos.y * 2) / 100);
 			state = STATE::PRE_START;
@@ -898,6 +930,7 @@ update_status ModuleGame::Update()
 	board->Update();
 	limit->Update();
 	piano->Update();
+	npc->Update();
 
 	if(state==STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE);
 
