@@ -254,28 +254,21 @@ void ModuleRender::Best_Time()
 
 void ModuleRender::Leaderboard()
 {
-    // Coordinates for the fixed text
-    Vector2 leaderboard_rank1_pos = { 1420, 200 };
-    Vector2 leaderboard_rank2_pos = { 1420, 230 };
+    std::string first_text;
+    std::string second_text;
 
-    // Coordinates for the dynamic text
-    Vector2 leaderboard_player1_pos = { 1500, 230 };
-    Vector2 leaderboard_player2_pos = { 1500, 200 };
+    if (first == 1) {
+        first_text = "Player 1";
+        second_text = "Player 2";
+    }
+    else if (first == 2) {
+        first_text = "Player 2";
+        second_text = "Player 1";
+    }
 
-    // Draw the fixed text
-    DrawTextEx(myFont, "1st", leaderboard_rank1_pos, myFont.baseSize, 1.0f, WHITE);
-    DrawTextEx(myFont, "2nd", leaderboard_rank2_pos, myFont.baseSize, 1.0f, WHITE);
+    DrawText(first_text.c_str(), 1400, 200, myFont, 1, WHITE);
+    DrawText(second_text.c_str(), 1400, 250, myFont, 1, WHITE);
 
-    
-    bool player1_is_first = App->scene_intro->player1_is_first;
-
-    
-    std::string first_position = (player1_is_first ? "Player 2" : "Player 1");
-    std::string second_position = (player1_is_first ? "Player 1" : "Player 2");
-
-    // Draw the dynamic text
-    DrawTextEx(myFont, first_position.c_str(), leaderboard_player1_pos, myFont.baseSize, 1.0f, (player1_is_first ? BLUE : RED));
-    DrawTextEx(myFont, second_position.c_str(), leaderboard_player2_pos, myFont.baseSize, 1.0f, (player1_is_first ? RED : BLUE));
 }
 
 

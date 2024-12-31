@@ -467,6 +467,7 @@ public:
 			Rectangle{ (float)x , (float)y, (float)texture.width, (float)texture.height },
 			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f }, body->GetRotation() * RAD2DEG, WHITE);
 	}
+
 public:
 	Texture2D texture;
 };
@@ -572,6 +573,8 @@ public:
 		cnt = 0;
 		counter = 0;
 	}
+
+
 public:
 	Texture2D texture;
 
@@ -602,6 +605,7 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
+
 	checkpointStates.resize(checkpointPos.size(), false); //Player 1
 	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
@@ -928,7 +932,7 @@ update_status ModuleGame::Update()
 		}
 
 		limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
-
+		Leader();
 		break;
 	case END:
 		if (IsKeyPressed(KEY_M)) {
@@ -1141,31 +1145,67 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE))
 			App->audio->PlayFx(App->audio->aplause_fx);
+
+
 	}
 }
 
-void ModuleGame::Leader(PhysBody* bodyA, PhysBody* bodyB)
+void ModuleGame::Leader()
 {
 
 	if (player->lap > player2->lap) //Numero de vueltas
 	{
-		printf("Leder player 1");
+		App->renderer->first = 1;
+		printf("Leder player 1\n");
 	}
 	else if (player->lap < player2->lap)
 	{
-		printf("Leder player 2");
+		App->renderer->first = 2;
+		printf("Leder player 2\n");
 	}
 	else if (player->lap == player2->lap && num_checkpoint > num_checkpoint2) //Numero ckeckpoints
 	{
-		printf("Leder player 1");
+		App->renderer->first = 1;
+		printf("Leder player 1\n");
 	}
 	else if (player->lap == player2->lap && num_checkpoint < num_checkpoint2) //Numero ckeckpoints
 	{
-		printf("Leder player 2");
+		App->renderer->first = 2;
+		printf("Leder player 2\n");
 	}
 	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2)
 	{
+		Vector2 newCheckpointt = { 0.0f, 0.0f };
 
+		for (int i = 0; i < 7; ++i)
+			if (num_checkpoint - 1 == i)
+			{
+				newCheckpointt = checkpointPos[i];
+			}
+
+		b2Vec2 playerPos = player->body->body->GetPosition();
+		b2Vec2 playerPos2 = player2->body->body->GetPosition();
+		float distance_player1 = 0.0f;
+		float distance_player2 = 0.0f;
+
+		distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, newCheckpointt.x, newCheckpointt.y);
+		distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, newCheckpointt.x, newCheckpointt.y);
+
+		if (distance_player1 < distance_player2)
+		{
+			App->renderer->first = 1;
+			printf("Leder player 1\n");
+
+		}
+		else if (distance_player1 > distance_player2) {
+			App->renderer->first = 2;
+			printf("Leder player 2\n");
+
+		}
 	}
+	
 }
 
+float  ModuleGame:: distanceToCheckpoint(float x1, float y1, float x2, float y2) { //Calcular distancia entre dos puntos
+	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); 
+}

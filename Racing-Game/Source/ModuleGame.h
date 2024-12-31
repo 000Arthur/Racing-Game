@@ -35,7 +35,10 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
-	void Leader(PhysBody* bodyA, PhysBody* bodyB);
+	void Leader();
+
+	float distanceToCheckpoint(float x1, float y1, float x2, float y2);
+
 public:
 	bool finish = false;
 	bool player1_is_first = false;

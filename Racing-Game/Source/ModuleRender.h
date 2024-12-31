@@ -32,7 +32,7 @@ public:
 
 public:
 
-
+	int first = 1;
 	float timer_1[3];
 	float timer_2[3];
 
