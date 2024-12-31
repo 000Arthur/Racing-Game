@@ -670,7 +670,7 @@ bool ModuleGame::Start()
 
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
-	state = STATE::END;
+	//state = STATE::END;
 
 	return ret;
 }
@@ -1141,7 +1141,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 
 		}
-		if (player->lap >= 1 && player2->lap >= 1) state = END;
+		if (player->lap >= 3 && player2->lap >= 3) state = END;
 
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE))
 			App->audio->PlayFx(App->audio->aplause_fx);
