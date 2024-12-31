@@ -548,13 +548,9 @@ public:
 		: PhysicEntity(physics->CreateCar(_x, _y, 15, 28, b2_dynamicBody, id), _listener), texture(_texture) {
 	}
 
-	
 	int lapsCompleted = 0;            
 	int checkpointIndex = -1;         
 	float distanceToNextCheckpoint = 0.0f; 
-
-
-
 
 	void Update() override
 	{
@@ -571,6 +567,10 @@ public:
 	}
 	void SetPos(float x, float y) {
 		body->body->SetTransform({ x,y }, 0.0f);
+		lap = 0;
+		accelerate = false;
+		cnt = 0;
+		counter = 0;
 	}
 public:
 	Texture2D texture;
@@ -764,10 +764,8 @@ update_status ModuleGame::Update()
 	{
 	case PRE_START:
 		
-		if (IsKeyPressed(KEY_M)) {
-			App->audio->ChangeMusic();
-		}
-
+		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();
+		
 		App->audio->PlayFx(App->audio->aplause_fx);
 		App->audio->PlayFx(App->audio->traffic_light_fx);
 
@@ -777,18 +775,14 @@ update_status ModuleGame::Update()
 		App->audio->StopFx(App->audio->bost_fx_2);
 		App->audio->StopFx(App->audio->accelerate_fx_2);
 
-		if (IsKeyPressed(KEY_ENTER)) {
-			state = STATE::START;
-		}
+		if (IsKeyPressed(KEY_ENTER)) state = STATE::START;
 		
 		break;
 
 	case START:
 
-		if (IsKeyPressed(KEY_M)) {
-			App->audio->ChangeMusic();
-		}
-
+		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();
+	
 		App->audio->StopFx(App->audio->start_fx);
 
 		timer += GetFrameTime();
@@ -803,9 +797,8 @@ update_status ModuleGame::Update()
 		break;
 
 	case IN_GAME:
-		if (IsKeyPressed(KEY_M)) {
-			App->audio->ChangeMusic();
-		}
+		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();
+		
 		//enemy move
 		pathing(npc, path[npc->counter]);
 
@@ -951,8 +944,20 @@ update_status ModuleGame::Update()
 		if (IsKeyDown(KEY_ENTER)) {
 			player->SetPos((P1pos.x * 2) / 100, (P1pos.y * 2) / 100);
 			player2->SetPos((P2pos.x * 2) / 100, (P2pos.y * 2) / 100);
+			npc->SetPos((P1pos.x * 2) / 100, ((P1pos.y+40) * 2) / 100);
+
 			state = STATE::PRE_START;
 		}
+
+		applyFriction(player->body->body, FRICTION_COEFFICIENT+0.8f);
+		r = player->body->body->GetAngularVelocity();
+		player->body->body->ApplyTorque(-r / 100, true);
+		applyFriction(player2->body->body, FRICTION_COEFFICIENT + 0.8f);
+		r = player2->body->body->GetAngularVelocity();
+		player2->body->body->ApplyTorque(-r / 100, true);
+		applyFriction(npc->body->body, FRICTION_COEFFICIENT + 0.8f);
+		r = npc->body->body->GetAngularVelocity();
+		npc->body->body->ApplyTorque(-r / 100, true);
 
 		break;
 	default:
@@ -963,7 +968,6 @@ update_status ModuleGame::Update()
 	board->Update();
 	limit->Update();
 	piano->Update();
-	npc->Update();
 
 	if(state==STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE);
 
@@ -992,6 +996,9 @@ update_status ModuleGame::Update()
 		App->audio->StopFx(App->audio->engine_fx_2);
 		App->audio->StopFx(App->audio->bost_fx_2);
 	}
+
+	if (npc->lap < 3)npc->Update();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -1013,26 +1020,20 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(App->audio->collision_cars_fx);
 		
 		//Check if a car collides with a wheels wall
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == TIRE))
-			App->audio->PlayFx(App->audio->collision_object_fx);
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == TIRE)) App->audio->PlayFx(App->audio->collision_object_fx);
 
 		//puddle
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == PUDDLE))
-			App->audio->PlayFx(App->audio->puddle_fx);
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == PUDDLE)) App->audio->PlayFx(App->audio->puddle_fx);
 
 		//crack
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == CRACK))
-			App->audio->PlayFx(App->audio->crack_fx);
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == CRACK)) App->audio->PlayFx(App->audio->crack_fx);
 
-		if (bodyA->id == PLAYER_1  && bodyB->id == ON_ROAD)
-			player->MAX_VELOCITY = 2.0f;
-		else if (bodyA->id == PLAYER_1  && bodyB->id == OUT_ROAD)
-			player->MAX_VELOCITY = 1.0f;
+		if (bodyA->id == PLAYER_1  && bodyB->id == ON_ROAD) player->MAX_VELOCITY = 2.0f;
+		else if (bodyA->id == PLAYER_1  && bodyB->id == OUT_ROAD) player->MAX_VELOCITY = 1.0f;
 
-		if (bodyA->id == PLAYER_2 && bodyB->id == ON_ROAD)
-			player2->MAX_VELOCITY = 2.0f;
-		else if (bodyA->id == PLAYER_2 && bodyB->id == OUT_ROAD)
-			player2->MAX_VELOCITY = 1.0f;
+		if (bodyA->id == PLAYER_2 && bodyB->id == ON_ROAD) player2->MAX_VELOCITY = 2.0f;
+		else if (bodyA->id == PLAYER_2 && bodyB->id == OUT_ROAD) player2->MAX_VELOCITY = 1.0f;
+
 
 		for (int i = 0; i < checkpointStates.size(); ++i)
 		{
@@ -1049,18 +1050,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					break;
 				}
 			}
-		}
-
-		bool allCheckpointsPassed = true;
-		for (bool state : checkpointStates) {
-			if (!state) {
-				allCheckpointsPassed = false;
-				break;
-			}
-		}
-
-		for (int i = 0; i < checkpointStates2.size(); ++i)
-		{
 			if (bodyA->id == PLAYER_2 && bodyB->id == CHECK + i) // Player 2
 			{
 				if (i == 0 || checkpointStates2[i - 1]) // Ensure previous checkpoints are activated
@@ -1076,6 +1065,15 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 		}
 
+		
+		bool allCheckpointsPassed = true;
+		for (bool state : checkpointStates) {
+			if (!state) {
+				allCheckpointsPassed = false;
+				break;
+			}
+		}
+
 		bool allCheckpointsPassed2 = true;
 		for (bool state : checkpointStates2) {
 			if (!state) {
@@ -1086,7 +1084,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if ((bodyA->id == PLAYER_1) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed) {
 			App->renderer->player1_time = App->renderer->timer.ReadSec(); //Final time
-			printf("Tiempo player 1 %f", App->renderer->player1_time);
 			App->renderer->timer.Restart();
 			App->renderer->timer.Start();
 			App->audio->PlayFx(App->audio->finish_line_fx);
@@ -1109,62 +1106,10 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			allCheckpointsPassed2 = false;
 		}
-		if (player->lap >= 3 && player2->lap >= 3) {
-			state = END;
-		}
-
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE)) {
+		if (player->lap >= 3 && player2->lap >= 3) state = END;
+		
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE)) 
 			App->audio->PlayFx(App->audio->aplause_fx);
-
-		}
-		//// One of the players have completed more laps
-		//if (player->lapsCompleted > player2->lapsCompleted) {
-		//	
-		//	this->player1_is_first = true;
-		//}
-		//else if (player->lapsCompleted < player2->lapsCompleted) {
-		//	
-		//	this->player1_is_first = false;
-		//}
-		//else {
-		//	// Both players have completed the same number of laps
-		//	if (player->checkpointIndex > player2->checkpointIndex) {
-		//		
-		//		this->player1_is_first = true;
-		//	}
-		//	else if (player->checkpointIndex < player2->checkpointIndex) {
-		//		
-		//		this->player1_is_first = false;
-		//	}
-		//	else {
-		//		// Both players are at the same checkpoint
-		//		Vector2 nextCheckpointPlayer1 = checkpointPos[(player->checkpointIndex + 1) % checkpointPos.size()];
-		//		Vector2 nextCheckpointPlayer2 = checkpointPos[(player2->checkpointIndex + 1) % checkpointPos.size()];
-
-		//		int x1, y1, x2, y2;
-		//		player->body->GetPhysicPosition(x1, y1); 
-		//		player2->body->GetPhysicPosition(x2, y2); 
-
-		//		Vector2 player1Pos = { (float)x1, (float)y1 }; 
-		//		Vector2 player2Pos = { (float)x2, (float)y2 }; 
-
-		//		float distancePlayer1 = Vector2Distance(player1Pos, nextCheckpointPlayer1); 
-		//		float distancePlayer2 = Vector2Distance(player2Pos, nextCheckpointPlayer2); 
-
-		//		if (distancePlayer1 < distancePlayer2) {
-		//			
-		//			this->player1_is_first = true;
-		//		}
-		//		else if (distancePlayer1 > distancePlayer2) {
-		//			
-		//			this->player1_is_first = false;
-		//		}
-		//		else {
-		//			
-		//			this->player1_is_first = true;
-		//		}
-		//	}
-		//}
 	}
 }
 
