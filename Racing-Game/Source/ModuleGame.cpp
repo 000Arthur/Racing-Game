@@ -1048,7 +1048,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				{
 					if (!checkpointStates[i]) {
 						checkpointStates[i] = true;
-						num_checkpoint = i + 1;
+						num_checkpoint = i;
 						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
 						printf("Checkpoint %d passed!\n", i + 1);
 					}
@@ -1062,7 +1062,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				{
 					if (!checkpointStates2[i]) {
 						checkpointStates2[i] = true;
-						num_checkpoint2 = i + 1;
+						num_checkpoint2 = i;
 						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
 						printf("Checkpoint %d passed!\n", i + 1);
 					}
@@ -1175,33 +1175,52 @@ void ModuleGame::Leader()
 	}
 	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2)
 	{
-		Vector2 newCheckpointt = { 0.0f, 0.0f };
-
-		for (int i = 0; i < 7; ++i)
-			if (num_checkpoint - 1 == i)
-			{
-				newCheckpointt = checkpointPos[i];
-			}
+		Vector2 nextCheckpoint = { 0.0f, 0.0f };
+		Vector2 nextCheckpoint2 = { 0.0f, 0.0f };
+	
+		nextCheckpoint = checkpointPos[num_checkpoint];
+		nextCheckpoint2 = checkpointPos[num_checkpoint2];
 
 		b2Vec2 playerPos = player->body->body->GetPosition();
 		b2Vec2 playerPos2 = player2->body->body->GetPosition();
 		float distance_player1 = 0.0f;
 		float distance_player2 = 0.0f;
 
-		distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, newCheckpointt.x, newCheckpointt.y);
-		distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, newCheckpointt.x, newCheckpointt.y);
+		distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, nextCheckpoint.x, nextCheckpoint.y);
+		distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, nextCheckpoint2.x, nextCheckpoint2.y);
 
-		if (distance_player1 < distance_player2)
-		{
-			App->renderer->first = 1;
-			printf("Leder player 1\n");
+		printf("Checkpoint%d\n", num_checkpoint);
+		printf("Distancia Player 1 al checkpoint: %f\n", distance_player1);
+		printf("Distancia Player 2 al checkpoint: %f\n", distance_player2);
 
+		if (num_checkpoint2 != 4 && num_checkpoint2 != 3) {
+			if (distance_player1 < distance_player2)
+			{
+				App->renderer->first = 1;
+				printf("Leder player 1\n");
+
+			}
+			else if (distance_player1 > distance_player2) {
+				App->renderer->first = 2;
+				printf("Leder player 2\n");
+
+			}
 		}
-		else if (distance_player1 > distance_player2) {
-			App->renderer->first = 2;
-			printf("Leder player 2\n");
+		else if (num_checkpoint2 == 4 || num_checkpoint2 == 3) {
+			if (distance_player1 > distance_player2)
+			{
+				App->renderer->first = 1;
+				printf("Leder player 1\n");
 
+			}
+			else if (distance_player1 < distance_player2) {
+				App->renderer->first = 2;
+				printf("Leder player 2\n");
+
+			}
 		}
+		
+		
 	}
 	
 }
