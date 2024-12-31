@@ -670,6 +670,7 @@ bool ModuleGame::Start()
 
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
+	state = STATE::END;
 
 	return ret;
 }
@@ -946,14 +947,6 @@ update_status ModuleGame::Update()
 		App->renderer->timer.Stop();
 		App->renderer->timer2.Stop();
 
-		if (IsKeyDown(KEY_ENTER)) {
-			player->SetPos((P1pos.x * 2) / 100, (P1pos.y * 2) / 100);
-			player2->SetPos((P2pos.x * 2) / 100, (P2pos.y * 2) / 100);
-			npc->SetPos((P1pos.x * 2) / 100, ((P1pos.y + 40) * 2) / 100);
-
-			state = STATE::PRE_START;
-		}
-
 		applyFriction(player->body->body, FRICTION_COEFFICIENT + 0.8f);
 		r = player->body->body->GetAngularVelocity();
 		player->body->body->ApplyTorque(-r / 100, true);
@@ -964,6 +957,13 @@ update_status ModuleGame::Update()
 		r = npc->body->body->GetAngularVelocity();
 		npc->body->body->ApplyTorque(-r / 100, true);
 
+		if (IsKeyDown(KEY_ENTER)) {
+			player->SetPos((P1pos.x * 2) / 100, (P1pos.y * 2) / 100);
+			player2->SetPos((P2pos.x * 2) / 100, (P2pos.y * 2) / 100);
+			npc->SetPos((P1pos.x * 2) / 100, ((P1pos.y + 40) * 2) / 100);
+
+			state = STATE::PRE_START;
+		}
 		break;
 	default:
 		break;
@@ -1141,7 +1141,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 
 		}
-		if (player->lap >= 3 && player2->lap >= 3) state = END;
+		if (player->lap >= 1 && player2->lap >= 1) state = END;
 
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE))
 			App->audio->PlayFx(App->audio->aplause_fx);

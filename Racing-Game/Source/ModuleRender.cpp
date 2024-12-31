@@ -101,21 +101,23 @@ void ModuleRender::Start_game() {
         showText = !showText; // Toggle the visibility state of the text
         blinkTimer.Start();  // Reset the timer
     }
-    if (showText)
-    {
-        DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
-    }
+    if (showText) DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
+    
 }
 
 void ModuleRender::End_game() {
 
     std::string title = "TOTAL TIME";
     std::string play = "CLICK ENTER TO START";
-    Vector2 position_play = { 720.0f, 600.0f };
+    Vector2 position_play = { 770.0f, 600.0f };
 
-    Vector2 position = { 750.0f, 200.0f }; 
+    Vector2 position = { 760.0f, 200.0f };
+    Vector2 position2 = { 710.0f, 450.0f };
     Vector2 position_player1 = { 630.0f, 300.0f }; 
     Vector2 position_player2 = { 1020.0f, 300.0f };
+
+    int total_time_P1 = 0;
+    int total_time_P2 = 0;
 
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
 
@@ -125,13 +127,12 @@ void ModuleRender::End_game() {
         showText = !showText; // Toggle the visibility state of the text
         blinkTimer.Start();  // Reset the timer
     }
-    if (showText)
-    {
-        DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
-    }
+    if (showText)DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
+    
 
     for (int i = 0; i < 3; ++i) {
      
+            total_time_P1 += static_cast<int>(timer_1[i]);
             int minutes = static_cast<int>(timer_1[i] / 60);
             int seconds = static_cast<int>(timer_1[i]) % 60;
             int milliseconds = static_cast<int>((timer_1[i] - static_cast<int>(timer_1[i])) * 1000);
@@ -143,10 +144,10 @@ void ModuleRender::End_game() {
 
             DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
                 { position_player1.x, position_player1.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
-        
     }
 
     for (int i = 0; i < 3; ++i) {
+        total_time_P2 += static_cast<int>(timer_2[i]);
 
         int minutes = static_cast<int>(timer_2[i] / 60);
         int seconds = static_cast<int>(timer_2[i]) % 60;
@@ -160,22 +161,17 @@ void ModuleRender::End_game() {
         DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
             { position_player2.x, position_player2.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
     }
-
-
+    if (total_time_P1 < total_time_P2) DrawTextEx(myFont, "PLAYER 1 WINS", position2, myFont.baseSize * 2.0f, 1.5f, BLACK);
+    else DrawTextEx(myFont, "PLAYER 2 WINS", position2, myFont.baseSize * 2.0f, 1.5f, BLACK);
 }
-
 
 void ModuleRender::Timer_Player1()
 {
     if (state == PRE_START || state == START) {
         time_elapsed1 =0;
         timer.Start();
-
     }
-    else {
-        // Display the elapsed time
-        time_elapsed1 = timer.ReadSec();
-    }
+    else time_elapsed1 = timer.ReadSec();
 
     // Calculate minutes, seconds, and milliseconds
     int minutes = static_cast<int>(time_elapsed1) / 60;
@@ -190,7 +186,6 @@ void ModuleRender::Timer_Player1()
 
     // Display the formatted time on the screen
     DrawText(time_text.c_str(), 20, 50, myFont, 1, BLACK);
-
 }
 
 void ModuleRender::Timer_Player2()
@@ -198,11 +193,8 @@ void ModuleRender::Timer_Player2()
     if (state == PRE_START || state == START) {
         time_elapsed2 = 0;
         timer2.Start();
-
     }
-    else {
-        time_elapsed2 = timer2.ReadSec();
-    }
+    else time_elapsed2 = timer2.ReadSec();
 
     // Calculate minutes, seconds, and milliseconds
     int minutes = static_cast<int>(time_elapsed2) / 60;
@@ -224,20 +216,14 @@ void ModuleRender::Best_Time()
     int minutes = 0, seconds = 0, milliseconds = 0;
     static double best_time = 1000000; 
     // Comparar los tiempos cada vez que los jugadores finalizan una vuelta
-    if (player1_time > 0 && player1_time < best_time) {
-        best_time = player1_time;
-    }
-    if (player2_time > 0 && player2_time < best_time) {
-        best_time = player2_time;
-    }
+    if (player1_time > 0 && player1_time < best_time) best_time = player1_time;
+    
+    if (player2_time > 0 && player2_time < best_time) best_time = player2_time;
 
     std::string time_text;
 
-    if (best_time == 1000000) {
-        time_text = "BEST TIME: 00:00:00";
-    }
+    if (best_time == 1000000) time_text = "BEST TIME: 00:00:00";
     else {
-
         minutes = static_cast<int>(best_time) / 60;
         seconds = static_cast<int>(best_time) % 60;
         milliseconds = static_cast<int>((best_time - static_cast<int>(best_time)) * 1000);
@@ -249,7 +235,6 @@ void ModuleRender::Best_Time()
         (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
     DrawText(time_text.c_str(), 770, 50, myFont, 1, BLACK);
-
 }
 
 void ModuleRender::Leaderboard()
@@ -268,11 +253,7 @@ void ModuleRender::Leaderboard()
 
     DrawText(first_text.c_str(), 1400, 200, myFont, 1, WHITE);
     DrawText(second_text.c_str(), 1400, 250, myFont, 1, WHITE);
-
 }
-
-
-
 // PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
 {
@@ -310,7 +291,6 @@ update_status ModuleRender::PostUpdate()
 bool ModuleRender::CleanUp()
 {
     timer.Stop();
-
 
     UnloadFont(myFont);
 	return true;
