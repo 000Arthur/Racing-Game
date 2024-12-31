@@ -35,7 +35,7 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
-
+	void Leader(PhysBody* bodyA, PhysBody* bodyB);
 public:
 	bool finish = false;
 	bool player1_is_first = false;
@@ -110,7 +110,8 @@ public:
 	int currentCheckpointIndex2 = 0;
 	std::vector<bool> checkpointStates;
 	std::vector<bool> checkpointStates2;
-
+	int num_checkpoint;
+	int num_checkpoint2;
 	std::vector<Vector2> tiresPos = {
 
 		{365, 604},
