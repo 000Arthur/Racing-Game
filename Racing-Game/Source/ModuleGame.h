@@ -15,6 +15,7 @@ class Board;
 class Bost;
 class outRoad;
 class onRoad;
+class Obstacle;
 
 enum Enum{
 	NO_INTERACTION,PLAYER_1, PLAYER_2, 
@@ -42,10 +43,9 @@ public:
 	bool player1_is_first = false;
 
 	std::vector<PhysicEntity*> entities;
-	
-	Board* board;
-	onRoad* piano;
-	outRoad* limit;
+
+	Obstacle* obstacles;
+
 	Texture2D startLight[6];
 
 	Texture2D car1[2];
@@ -79,6 +79,7 @@ public:
 
 	bool check = false;
 	bool check_2 = false;
+	bool salida = false;
 
 	Car* player;
 	Car* player2;

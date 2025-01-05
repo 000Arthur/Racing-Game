@@ -148,7 +148,6 @@ void ModuleAudio::StopFx(unsigned int fx_id)
 void ModuleAudio::SoundsFx()
 {
 
-
 	accelerate_fx = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 

@@ -20,8 +20,6 @@
 #define DBG_NEW new
 #endif
 
-
-
 // TODO 1: Create an enum to represent physics categories for collision detection
 enum PhysicCategory{
 	DEFAULT = 1 << 0,
@@ -42,7 +40,9 @@ protected:
 		: body(_body)
 		, listener(_listener)
 	{
-		body->listener = listener;
+		if (body != nullptr) {
+			body->listener = listener;
+		}
 	}
 
 public:
@@ -87,11 +87,169 @@ private:
 	Texture2D texture;
 };
 
-class onRoad : public PhysicEntity
+class Obstacle : public PhysicEntity
 {
 public:
-	static constexpr int on_circuit[262] =
-	{
+
+	static constexpr int board[140] = {
+		352, 618,
+		334, 635,
+		319, 660,
+		309, 688,
+		303, 712,
+		303, 737,
+		302, 752,
+		296, 774,
+		282, 782,
+		271, 775,
+		265, 762,
+		264, 746,
+		266, 568,
+		277, 544,
+		294, 530,
+		431, 372,
+		469, 369,
+		743, 369,
+		750, 372,
+		759, 383,
+		760, 434,
+		764, 450,
+		1030, 754,
+		1051, 777,
+		1062, 788,
+		1081, 799,
+		1107, 807,
+		1127, 810,
+		1711, 813,
+		1109, 817,
+		1092, 832,
+		1057, 871,
+		1030, 878,
+		679, 876,
+		668, 868,
+		661, 845,
+		661, 723,
+		659, 704,
+		657, 690,
+		646, 666,
+		629, 638,
+		613, 618,
+		615, 612,
+		640, 644,
+		662, 683,
+		668, 846,
+		692, 871,
+		1032, 871,
+		1093, 820,
+		1092, 809,
+		1071, 799,
+		1047, 782,
+		766, 464,
+		754, 446,
+		753, 386,
+		743, 374,
+		453, 372,
+		430, 380,
+		281, 546,
+		274, 559,
+		270, 592,
+		269, 756,
+		274, 772,
+		283, 771,
+		295, 757,
+		296, 733,
+		299, 703,
+		307, 671,
+		320, 646,
+		334, 624
+	};
+
+	static constexpr int outRoad[164] = {
+		124, 961,
+		124, 527,
+		124, 504,
+		129, 486,
+		134, 466,
+		141, 449,
+		149, 435,
+		161, 419,
+		316, 241,
+		333, 226,
+		343, 217,
+		356, 211,
+		375, 203,
+		392, 200,
+		838, 197,
+		855, 200,
+		870, 204,
+		890, 217,
+		904, 230,
+		918, 246,
+		927, 264,
+		932, 281,
+		936, 306,
+		935, 414,
+		941, 422,
+		1120, 627,
+		1132, 637,
+		1148, 644,
+		1163, 647,
+		1174, 648,
+		1825, 648,
+		1843, 651,
+		1859, 657,
+		1874, 666,
+		1886, 675,
+		1901, 690,
+		1913, 708,
+		1918, 950,
+		1913, 971,
+		1903, 991,
+		1891, 1004,
+		1879, 1014,
+		1861, 1026,
+		1830, 1033,
+		1358, 1035,
+		1322, 1031,
+		1298, 1020,
+		1274, 1004,
+		1254, 984,
+		1239, 969,
+		1210, 969,
+		1194, 983,
+		1165, 1008,
+		1128, 1024,
+		1086, 1033,
+		632, 1033,
+		601, 1026,
+		579, 1016,
+		565, 1000,
+		543, 970,
+		533, 934,
+		532, 922,
+		531, 782,
+		526, 764,
+		510, 749,
+		507, 745,
+		484, 742,
+		467, 753,
+		454, 765,
+		451, 787,
+		452, 965,
+		445, 1002,
+		432, 1028,
+		425, 1039,
+		396, 1063,
+		371, 1072,
+		356, 1075,
+		215, 1074,
+		186, 1067,
+		165, 1051,
+		151, 1037,
+		126, 985
+	};
+
+	static constexpr int onRoad[262] = {
 		133, 526,
 		133, 510,
 		134, 500,
@@ -224,226 +382,78 @@ public:
 		143, 818,
 		136, 736
 	};
-
-	onRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChainSenor(0, 0, on_circuit, 262, 11), _listener)
-		, texture(_texture)
-	{
-		body->id = ON_ROAD;
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
-	}
-
-private:
-	Texture2D texture;
-};
-
-class outRoad : public PhysicEntity
-{
-public:
-	static constexpr int out_circuit[164] =
-	{
-		124, 961,
-		124, 527,
-		124, 504,
-		129, 486,
-		134, 466,
-		141, 449,
-		149, 435,
-		161, 419,
-		316, 241,
-		333, 226,
-		343, 217,
-		356, 211,
-		375, 203,
-		392, 200,
-		838, 197,
-		855, 200,
-		870, 204,
-		890, 217,
-		904, 230,
-		918, 246,
-		927, 264,
-		932, 281,
-		936, 306,
-		935, 414,
-		941, 422,
-		1120, 627,
-		1132, 637,
-		1148, 644,
-		1163, 647,
-		1174, 648,
-		1825, 648,
-		1843, 651,
-		1859, 657,
-		1874, 666,
-		1886, 675,
-		1901, 690,
-		1913, 708,
-		1918, 950,
-		1913, 971,
-		1903, 991,
-		1891, 1004,
-		1879, 1014,
-		1861, 1026,
-		1830, 1033,
-		1358, 1035,
-		1322, 1031,
-		1298, 1020,
-		1274, 1004,
-		1254, 984,
-		1239, 969,
-		1210, 969,
-		1194, 983,
-		1165, 1008,
-		1128, 1024,
-		1086, 1033,
-		632, 1033,
-		601, 1026,
-		579, 1016,
-		565, 1000,
-		543, 970,
-		533, 934,
-		532, 922,
-		531, 782,
-		526, 764,
-		510, 749,
-		507, 745,
-		484, 742,
-		467, 753,
-		454, 765,
-		451, 787,
-		452, 965,
-		445, 1002,
-		432, 1028,
-		425, 1039,
-		396, 1063,
-		371, 1072,
-		356, 1075,
-		215, 1074,
-		186, 1067,
-		165, 1051,
-		151, 1037,
-		126, 985
+	static constexpr int Limit[56] = {
+		207, 1110,
+		382, 1105,
+		521, 996,
+		662, 1100,
+		1017, 1099,
+		1022, 1062,
+		1569, 1051,
+		1584, 1105,
+		1916, 1103,
+		1914, 579,
+		1694, 556,
+		1668, 482,
+		1394, 474,
+		1386, 560,
+		1277, 571,
+		1232, 403,
+		1128, 399,
+		1108, 473,
+		1014, 425,
+		932, 143,
+		862, 136,
+		816, 178,
+		767, 133,
+		636, 155,
+		320, 171,
+		96, 415,
+		94, 727,
+		103, 1059
 	};
 
-	outRoad(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChainSenor(0, 0, out_circuit, 164, 11), _listener)
-		, texture(_texture)
+	Obstacle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
+		: PhysicEntity(nullptr, _listener), texture(_texture)
 	{
-		body->id = OUT_ROAD;
+		CreateChain(physics, board, sizeof(board) / sizeof(board[0]), _x, _y, HIT);
+		CreateChain(physics, Limit, sizeof(Limit) / sizeof(Limit[0]), _x, _y, HIT);
+		CreateChainSensor(physics, outRoad, sizeof(outRoad) / sizeof(outRoad[0]), _x, _y, OUT_ROAD);
+		CreateChainSensor(physics, onRoad, sizeof(onRoad) / sizeof(onRoad[0]), _x, _y, ON_ROAD);
 	}
 
 	void Update() override
 	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
+		for (const auto& body : bodies) {
+			int x, y;
+			body->GetPhysicPosition(x, y);
+			DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
+		}
 	}
 
 private:
 	Texture2D texture;
-};
+	std::vector<PhysBody*> bodies; // Vector para almacenar los objetos
 
-class Board : public PhysicEntity
-{
-public:
-	static constexpr int board_circuit[140] =
-	{
-		352, 618,
-		334, 635,
-		319, 660,
-		309, 688,
-		303, 712,
-		303, 737,
-		302, 752,
-		296, 774,
-		282, 782,
-		271, 775,
-		265, 762,
-		264, 746,
-		266, 568,
-		277, 544,
-		294, 530,
-		431, 372,
-		469, 369,
-		743, 369,
-		750, 372,
-		759, 383,
-		760, 434,
-		764, 450,
-		1030, 754,
-		1051, 777,
-		1062, 788,
-		1081, 799,
-		1107, 807,
-		1127, 810,
-		1711, 813,
-		1109, 817,
-		1092, 832,
-		1057, 871,
-		1030, 878,
-		679, 876,
-		668, 868,
-		661, 845,
-		661, 723,
-		659, 704,
-		657, 690,
-		646, 666,
-		629, 638,
-		613, 618,
-		615, 612,
-		640, 644,
-		662, 683,
-		668, 846,
-		692, 871,
-		1032, 871,
-		1093, 820,
-		1092, 809,
-		1071, 799,
-		1047, 782,
-		766, 464,
-		754, 446,
-		753, 386,
-		743, 374,
-		453, 372,
-		430, 380,
-		281, 546,
-		274, 559,
-		270, 592,
-		269, 756,
-		274, 772,
-		283, 771,
-		295, 757,
-		296, 733,
-		299, 703,
-		307, 671,
-		320, 646,
-		334, 624
-	};
 
-	Board(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(0, 0, board_circuit, 140, b2_staticBody, 0), _listener)
-		, texture(_texture)
+	void CreateChain(ModulePhysics* physics, const int* circuit, int size, int _x, int _y, int i)
 	{
-		body->id = HIT;
+		PhysBody* body = physics->CreateChain(_x, _y, circuit, size, b2_staticBody, i);
+		if (body != nullptr) {
+			bodies.push_back(body);
+		}
 	}
 
-	void Update() override
+	void CreateChainSensor(ModulePhysics* physics, const int* circuit, int size, int _x, int _y, int i)
 	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 2.0f, WHITE);
+		PhysBody* body = physics->CreateChainSenor(_x, _y, circuit, size, i);
+		if (body != nullptr) {
+			bodies.push_back(body);
+		}
 	}
-
-private:
-	Texture2D texture;
 };
+
+
 
 class FinishLine : public PhysicEntity {
 public:
@@ -589,7 +599,10 @@ public:
 	float BOOST_QUANTITY = 20.0F;
 	float BOOST_CNT = 0.0F;
 	float MAX_VELOCITY = 2.0f;
+
 	bool accelerate = false;
+	bool firstTime = false;
+
 	int cnt = 0;
 	int counter = 0;
 
@@ -649,9 +662,7 @@ bool ModuleGame::Start()
 		startLight[i] = LoadTexture(filename.c_str());
 	}
 
-	board = new Board(App->physics, 0, 0, this, circuit);
-	limit = new outRoad(App->physics, 0, 0, this, circuit);
-	piano = new onRoad(App->physics, 0, 0, this, circuit);
+	obstacles = new Obstacle(App->physics, 0, 0, this, circuit);
 
 	player = new Car(App->physics, P1pos.x, P1pos.y, this, car1[0], PLAYER_1);
 	player2 = new Car(App->physics, P2pos.x, P2pos.y, this, car2[0], PLAYER_2);
@@ -682,24 +693,17 @@ bool ModuleGame::Start()
 }
 
 void limitVelocity(b2Body* body, float maxSpeed) {
-	// Obtén la velocidad actual del cuerpo
 	b2Vec2 velocity = body->GetLinearVelocity();
-
-	// Calcula la magnitud de la velocidad
 	float speed = velocity.Length();
 
-	// Si la velocidad supera el máximo, ajusta el vector de velocidad
 	if (speed > maxSpeed) {
-		// Normaliza la velocidad y ajusta su magnitud al límite máximo
 		velocity *= maxSpeed / speed; // Reduce proporcionalmente x e y
 		body->SetLinearVelocity(velocity); // Asigna la velocidad ajustada
 	}
 }
 void limitAngularVelocity(b2Body* body, float maxAngularVelocity) {
-	// Obtén la velocidad angular actual
 	float angularVelocity = body->GetAngularVelocity();
 
-	// Si la velocidad angular supera el límite, ajustarla
 	if (fabs(angularVelocity) > maxAngularVelocity) {
 		// Clampear la velocidad angular al rango permitido
 		angularVelocity = (angularVelocity > 0 ? maxAngularVelocity : -maxAngularVelocity);
@@ -707,23 +711,18 @@ void limitAngularVelocity(b2Body* body, float maxAngularVelocity) {
 	}
 }
 void applyFriction(b2Body* body, float frictionCoefficient) {
-	// Obtén la velocidad actual del cuerpo
 	b2Vec2 velocity = body->GetLinearVelocity();
 
-	// Si la velocidad es muy baja, detén completamente el movimiento
 	if (velocity.Length() < 0.01f) {
 		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 		return;
 	}
-	// Calcula la fuerza de fricción proporcional a la velocidad
+	
 	b2Vec2 frictionForce = -velocity; // Dirección opuesta al movimiento
 	frictionForce *= frictionCoefficient; // Ajusta según el coeficiente de fricción
-
-	// Aplica la fuerza de fricción al centro del cuerpo
 	body->ApplyForceToCenter(frictionForce, true);
 }
 
-// Update: draw background
 void pathing(Car* NPC, Vector2 path) {
 
 	b2Vec2 f = NPC->body->body->GetWorldVector(b2Vec2(0.0f, -2.0f));
@@ -758,7 +757,6 @@ update_status ModuleGame::Update()
 	vec2f normal(0.0f, 0.0f);
 
 	App->audio->UpdateMusic();
-
 
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y); // DELETE LATER
 
@@ -796,6 +794,23 @@ update_status ModuleGame::Update()
 				state = STATE::IN_GAME;
 			}
 		}
+
+		if (IsKeyDown(KEY_W)){
+			player->firstTime = true;
+			//colocar audio de aceleración
+		}
+		else {
+			player->firstTime = false;
+		}
+
+		if (IsKeyDown(KEY_UP)) {
+			player2->firstTime = true;
+			//colocar audio de aceleración
+		}
+		else {
+			player2->firstTime = false;
+		}
+
 		break;
 
 	case IN_GAME:
@@ -821,19 +836,20 @@ update_status ModuleGame::Update()
 				App->audio->StopFx(App->audio->accelerate_fx);
 				player->texture = car1[0];
 
-				if (IsKeyDown(KEY_W)) vel = -2.0f;
+				if (IsKeyDown(KEY_W))vel = -2.0f;
 				else if (IsKeyDown(KEY_S)) vel = 0.2f;
 				else {
 					vel = 0.0f;
 					applyFriction(player->body->body, FRICTION_COEFFICIENT);
 					App->audio->StopFx(App->audio->engine_fx);
 					App->audio->StopFx(App->audio->in_Reverse_fx);
-
 				}
-				if (IsKeyPressed(KEY_W)) {
+				if (IsKeyPressed(KEY_W)|| player->firstTime) {
 					App->audio->StopFx(App->audio->in_Reverse_fx);
 					if (App->audio->PlayFx(App->audio->accelerate_fx))	App->audio->StopFx(App->audio->engine_fx);
 					else if (!App->audio->PlayFx(App->audio->accelerate_fx)) App->audio->PlayFx(App->audio->engine_fx);
+					player->firstTime = false;
+
 				}
 				else if (IsKeyPressed(KEY_S)) {
 					App->audio->PlayFx(App->audio->in_Reverse_fx);
@@ -868,7 +884,7 @@ update_status ModuleGame::Update()
 
 		//Player 2 controls
 		if (!player2->accelerate && player2->lap < 3) {
-			if (IsKeyPressed(KEY_RIGHT_SHIFT) && player->BOOST_QUANTITY > 0) {
+			if (IsKeyPressed(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {
 				App->audio->PlayFx(App->audio->accelerate_fx_2);
 			}
 			if (IsKeyDown(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {
@@ -892,12 +908,11 @@ update_status ModuleGame::Update()
 					App->audio->StopFx(App->audio->engine_fx_2);
 					App->audio->StopFx(App->audio->in_Reverse_fx_2);
 				}
-				if (IsKeyPressed(KEY_UP)) {
+				if (IsKeyPressed(KEY_UP)|| player2->firstTime) {
 					App->audio->StopFx(App->audio->in_Reverse_fx_2);
-
 					if (App->audio->PlayFx(App->audio->accelerate_fx_2))	App->audio->StopFx(App->audio->engine_fx_2);
 					else if (!App->audio->PlayFx(App->audio->accelerate_fx_2)) App->audio->PlayFx(App->audio->engine_fx_2);
-
+					player2->firstTime = false;
 				}
 				else if (IsKeyPressed(KEY_DOWN)) {
 					App->audio->PlayFx(App->audio->in_Reverse_fx_2);
@@ -931,7 +946,9 @@ update_status ModuleGame::Update()
 		limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
 		Leader();
 		break;
+
 	case END:
+
 		if (IsKeyPressed(KEY_M)) {
 			App->audio->ChangeMusic();
 		}
@@ -961,14 +978,13 @@ update_status ModuleGame::Update()
 			state = STATE::PRE_START;
 		}
 		break;
+
 	default:
 		break;
 	}
 
 	//UPDATE---------------------
-	board->Update();
-	limit->Update();
-	piano->Update();
+	obstacles->Update();
 
 	if (state == STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE);
 
@@ -976,7 +992,7 @@ update_status ModuleGame::Update()
 	DrawRectangle(rectX, rectY, rectWidth, rectHeight, BEIGE);
 
 	rectWidth = player2->BOOST_QUANTITY * 20; // Ancho del rectángulo
-	DrawRectangle(rectX + 1200, rectY, rectWidth, rectHeight, BROWN);
+	DrawRectangle(rectX + 1200, rectY, rectWidth, rectHeight, LIGHTBROWN);
 
 	for (int i = 1; i < entitieQ; i++) {
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
@@ -1215,9 +1231,7 @@ bool ModuleGame::CleanUp()
 	delete player;
 	delete player2;
 	delete npc;
-	delete board;
-	delete piano;
-	delete limit;
+	delete obstacles;
 
 	for (int i = 1; i < entitieQ; i++) 
 		delete entities[i];
