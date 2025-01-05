@@ -6,14 +6,24 @@
 #include "ModulePhysics.h"
 #include <string>
 
-float Vector2Distance(Vector2 a, Vector2 b) {
-	return sqrtf((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
-}
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
+#include <iostream>
+
+#ifdef _DEBUG
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+// allocations to be of _CLIENT_BLOCK type
+#else
+#define DBG_NEW new
+#endif
+
 
 
 // TODO 1: Create an enum to represent physics categories for collision detection
-enum PhysicCategory
-{
+enum PhysicCategory{
 	DEFAULT = 1 << 0,
 	CAR = 1 << 2,
 	BIKE = 1 << 4
@@ -519,8 +529,7 @@ public:
 		: PhysicEntity(physics->CreateRectangleSensor(_x, _y, 20, 20, id), _listener), texture(_texture) {
 	}
 
-	void Update() override
-	{
+	void Update() override {
 		int x, y;
 		body->GetPhysicPosition(x, y);
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
@@ -553,8 +562,7 @@ public:
 	int checkpointIndex = -1;
 	float distanceToNextCheckpoint = 0.0f;
 
-	void Update() override
-	{
+	void Update() override {
 		int x, y;
 		body->GetPhysicPosition(x, y);
 		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
@@ -573,7 +581,6 @@ public:
 		cnt = 0;
 		counter = 0;
 	}
-
 
 public:
 	Texture2D texture;
@@ -670,16 +677,8 @@ bool ModuleGame::Start()
 
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
-	//state = STATE::END;
 
 	return ret;
-}
-
-// Load assets
-bool ModuleGame::CleanUp()
-{
-	LOG("Unloading Intro scene");
-	return true;
 }
 
 void limitVelocity(b2Body* body, float maxSpeed) {
@@ -716,7 +715,6 @@ void applyFriction(b2Body* body, float frictionCoefficient) {
 		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 		return;
 	}
-
 	// Calcula la fuerza de fricción proporcional a la velocidad
 	b2Vec2 frictionForce = -velocity; // Dirección opuesta al movimiento
 	frictionForce *= frictionCoefficient; // Ajusta según el coeficiente de fricción
@@ -735,19 +733,16 @@ void pathing(Car* NPC, Vector2 path) {
 		NPC->cnt = 0;
 		NPC->counter = 0;
 	}
-
-	else if (NPC->cnt > path.x && NPC->cnt < path.y && (NPC->counter == 3 || NPC->counter == 6)) {
+	else if (NPC->cnt > path.x && NPC->cnt < path.y && (NPC->counter == 3 || NPC->counter == 6)) 
 		NPC->body->body->ApplyTorque(-0.2f, true);
-	}
-	else if (NPC->cnt > path.x && NPC->cnt < path.y) {
+	else if (NPC->cnt > path.x && NPC->cnt < path.y) 
 		NPC->body->body->ApplyTorque(0.2f, true);
-	}
 	else {
 		double r = NPC->body->body->GetAngularVelocity();
 		NPC->body->body->ApplyTorque(-r / 100, true);
 	}
-	if (NPC->cnt > path.y) NPC->counter++;
 
+	if (NPC->cnt > path.y) NPC->counter++;
 	NPC->cnt++;
 	limitVelocity(NPC->body->body, NPC->MAX_VELOCITY);
 	limitAngularVelocity(NPC->body->body, 1.0f);
@@ -763,6 +758,7 @@ update_status ModuleGame::Update()
 	vec2f normal(0.0f, 0.0f);
 
 	App->audio->UpdateMusic();
+
 
 	if (IsKeyPressed(KEY_T)) printf("%d, %d, \n", mouse.x, mouse.y); // DELETE LATER
 
@@ -1004,6 +1000,7 @@ update_status ModuleGame::Update()
 
 	if (npc->lap < 3)npc->Update();
 
+
 	return UPDATE_CONTINUE;
 }
 
@@ -1072,7 +1069,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 		}
 
-
 		bool allCheckpointsPassed = true;
 		for (bool state : checkpointStates) {
 			if (!state) {
@@ -1113,7 +1109,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			allCheckpointsPassed = false;
 			num_checkpoint = 0;
-
 		}
 
 		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2) {
@@ -1144,37 +1139,25 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (player->lap >= 3 && player2->lap >= 3) state = END;
 
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE))
-			App->audio->PlayFx(App->audio->aplause_fx);
-
-
+			App->audio->PlayFx(App->audio->aplause_fx); 
 	}
 }
 
 void ModuleGame::Leader()
 {
-
 	if (player->lap > player2->lap) //Numero de vueltas
-	{
 		App->renderer->first = 1;
-		printf("Leder player 1\n");
-	}
+	
 	else if (player->lap < player2->lap)
-	{
 		App->renderer->first = 2;
-		printf("Leder player 2\n");
-	}
+	
 	else if (player->lap == player2->lap && num_checkpoint > num_checkpoint2) //Numero ckeckpoints
-	{
 		App->renderer->first = 1;
-		printf("Leder player 1\n");
-	}
+	
 	else if (player->lap == player2->lap && num_checkpoint < num_checkpoint2) //Numero ckeckpoints
-	{
 		App->renderer->first = 2;
-		printf("Leder player 2\n");
-	}
-	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2)
-	{
+	
+	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2){
 		Vector2 nextCheckpoint = { 0.0f, 0.0f };
 		Vector2 nextCheckpoint2 = { 0.0f, 0.0f };
 	
@@ -1219,12 +1202,26 @@ void ModuleGame::Leader()
 
 			}
 		}
-		
-		
 	}
-	
+}
+float  ModuleGame::distanceToCheckpoint(float x1, float y1, float x2, float y2) { //Calcular distancia entre dos puntos
+	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
-float  ModuleGame:: distanceToCheckpoint(float x1, float y1, float x2, float y2) { //Calcular distancia entre dos puntos
-	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); 
+bool ModuleGame::CleanUp()
+{
+	LOG("Unloading Intro scene");
+	int* memoryLeak = DBG_NEW int(1);
+	delete player;
+	delete player2;
+	delete npc;
+	delete board;
+	delete piano;
+	delete limit;
+
+	for (int i = 1; i < entitieQ; i++) 
+		delete entities[i];
+	_CrtDumpMemoryLeaks();
+
+	return true;
 }

@@ -3,9 +3,7 @@
 #include "Globals.h"
 #include "Module.h"
 #include "ModuleRender.h"
-
 #include "p2Point.h"
-
 #include "raylib.h"
 #include <vector>
 
@@ -44,15 +42,16 @@ public:
 	bool player1_is_first = false;
 
 	std::vector<PhysicEntity*> entities;
-	std::vector<Bost*> bosters;
 	
 	Board* board;
 	onRoad* piano;
 	outRoad* limit;
 	Texture2D startLight[6];
+
 	Texture2D car1[2];
 	Texture2D car2[2];
 	Texture2D car3[2];
+
 	Texture2D tires[3];
 	Texture2D speedBoost;
 	Texture2D nitroBoost;
@@ -80,11 +79,25 @@ public:
 
 	bool check = false;
 	bool check_2 = false;
-	Camera2D camera1 = { 0 };
 
 	Car* player;
 	Car* player2;
 	Car* npc;
+
+	Vector2 P1pos = {210.0f, 730.0f};
+	Vector2 P2pos = {174.0f, 750.0f};
+
+	vec2<int> ray;
+	bool ray_on;
+	int entitieQ = 34;
+	bool out = false;
+
+	int currentCheckpointIndex = 0;
+	int currentCheckpointIndex2 = 0;
+	std::vector<bool> checkpointStates;
+	std::vector<bool> checkpointStates2;
+	int num_checkpoint;
+	int num_checkpoint2;
 
 	std::vector<Vector2> path = {
 		{120, 140},
@@ -98,24 +111,7 @@ public:
 		{2390,2390}
 	};
 
-	Vector2 P1pos = {210.0f, 730.0f};
-	Vector2 P2pos = {174.0f, 750.0f};
-
-	Bike* cono;
-
-	vec2<int> ray;
-	bool ray_on;
-	int entitieQ = 34;
-	bool out = false;
-
-	int currentCheckpointIndex = 0;
-	int currentCheckpointIndex2 = 0;
-	std::vector<bool> checkpointStates;
-	std::vector<bool> checkpointStates2;
-	int num_checkpoint;
-	int num_checkpoint2;
 	std::vector<Vector2> tiresPos = {
-
 		{365, 604},
 		{383, 592},
 		{414, 578},
@@ -143,8 +139,6 @@ public:
 		{1628, 865},
 		{1652, 865},
 		{1676, 865}
-
-
 	};
 
 	std::vector<Vector2> BostersPos = {
@@ -172,5 +166,4 @@ public:
 		{900, 280},
 		{1775, 880}		
 	};
-
 };
