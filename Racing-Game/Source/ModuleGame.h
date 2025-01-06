@@ -22,7 +22,11 @@ enum Enum{
 	SPEED_BOOST,NITRO_BOOST, HIT, TIRE, FINISH_LINE,CHECK,
 	PUDDLE = 15, CRACK,ON_ROAD,OUT_ROAD,
 };
-
+enum CarTextures {
+	CAR_1_NORMAL, CAR_1_BOOST,
+	CAR_2_NORMAL, CAR_2_BOOST,
+	CAR_3_NORMAL, CAR_3_BOOST
+};
 
 class ModuleGame : public Module
 {
@@ -34,6 +38,7 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
+	void pathing(Car* NPC, Vector2 path);
 	void Leader();
 
 	float distanceToCheckpoint(float x1, float y1, float x2, float y2);
@@ -48,15 +53,12 @@ public:
 
 	Texture2D startLight[6];
 
-	Texture2D car1[2];
-	Texture2D car2[2];
-	Texture2D car3[2];
+	Texture2D carsTexture[6];
 
 	Texture2D tires[3];
 	Texture2D speedBoost;
 	Texture2D nitroBoost;
 
-	Texture2D bike;
 	Texture2D circuit;
 
 	int currentFrame = 0;
@@ -69,7 +71,13 @@ public:
 	float vel3 = 0.0f;
 
 	const float FRICTION_COEFFICIENT = 0.2f;
+	const float MAX_FRICTION_COEFFICIENT = 1.0f;
+
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
+	const float BOOST_RECOVER = 10.0f;
+
+	const float CAR_VELOCITY = 2.0f;
+	const float CAR_TURN = 0.2F;
 
 	unsigned int accelerate_fx_id = 0;
 

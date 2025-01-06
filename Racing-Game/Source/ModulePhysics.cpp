@@ -99,40 +99,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
-{
-	PhysBody* pbody = new PhysBody();
-
-	b2BodyDef body;
-	body.type = b2_dynamicBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
-
-	b2Body* b = world->CreateBody(&body);
-	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
-
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	fixture.density = 1.0f;
-
-	// TODO 2: Add filter categoryBits and maskBits to fixture
-	fixture.filter.categoryBits = categoryBits;
-	fixture.filter.maskBits = maskBits;
-
-	// TODO 5: Add groupIndex filter to fixture. Set default value to 0
-	fixture.filter.groupIndex = groupIndex;
-
-	b->CreateFixture(&fixture);
-
-	pbody->body = b;
-	pbody->width = (int)(width * 0.5f);
-	pbody->height = (int)(height * 0.5f);
-
-	return pbody;
-}
-
-PhysBody* ModulePhysics::CreateCar(int x, int y, int width, int height, b2BodyType bType, int inf)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2BodyType bType, int inf)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -158,7 +125,6 @@ PhysBody* ModulePhysics::CreateCar(int x, int y, int width, int height, b2BodyTy
 
 	return pbody;
 }
-
 
 PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, int inf)
 {

@@ -48,8 +48,7 @@ public:
 	bool CleanUp();
 
 	PhysBody* CreateCircle(int x, int y, int radius);
-	PhysBody* CreateRectangle(int x, int y, int width, int height, uint16 categoryBits, uint16 maskBits, int16 groupIndex = 0);
-	PhysBody* CreateCar(int x, int y, int width, int height, b2BodyType bType, int inf);
+	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType bType, int inf);
 
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, int inf);
 	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType bType, int inf);
