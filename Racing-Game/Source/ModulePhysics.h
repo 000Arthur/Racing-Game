@@ -50,16 +50,17 @@ public:
 	PhysBody* CreateCircle(int x, int y, int radius);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, b2BodyType bType, int inf);
 
+
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, int inf);
 	PhysBody* CreateChain(int x, int y, const int* points, int size, b2BodyType bType, int inf);
 	PhysBody* CreateChainSenor(int x, int y, const int* points, int size, int inf);
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
+	bool debug;
 
 private:
 
-	bool debug;
 	b2World* world;
 	b2MouseJoint* mouse_joint;
 	b2Body* ground;

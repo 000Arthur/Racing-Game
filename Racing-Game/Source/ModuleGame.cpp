@@ -653,8 +653,8 @@ void applyFriction(b2Body* body, float frictionCoefficient) {
 		return;
 	}
 	
-	b2Vec2 frictionForce = -velocity; // Dirección opuesta al movimiento
-	frictionForce *= frictionCoefficient; // Ajusta según el coeficiente de fricción
+	b2Vec2 frictionForce = -velocity;		 // Dirección opuesta al movimiento
+	frictionForce *= frictionCoefficient;		 // Ajusta según el coeficiente de fricción
 	body->ApplyForceToCenter(frictionForce, true);
 }
 
@@ -670,11 +670,11 @@ void ModuleGame::pathing(Car* NPC, Vector2 path) {
 	}
 	else if (NPC->cnt > path.x && NPC->cnt < path.y && (NPC->counter == 3 || NPC->counter == 6)) //Counter is the varible that controls every move
 		NPC->body->body->ApplyTorque(-CAR_TURN, true);
-	else if (NPC->cnt > path.x && NPC->cnt < path.y)											 //The space between path.x and path.y is the duration of the move
+	else if (NPC->cnt > path.x && NPC->cnt < path.y)		//The space between path.x and path.y is the duration of the move
 		NPC->body->body->ApplyTorque(CAR_TURN, true);										
 	else NPC->AvoidSpin();
 
-	if (NPC->cnt > path.y) NPC->counter++;														//End of the actual move
+	if (NPC->cnt > path.y) NPC->counter++;		//End of the actual move
 	NPC->cnt++;																					
 	limitVelocity(NPC->body->body, NPC->MAX_VELOCITY);
 	limitAngularVelocity(NPC->body->body, MAX_ANGULAR_VELOCITY);
@@ -791,37 +791,38 @@ update_status ModuleGame::Update()
 				b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel)); 
 				player->body->body->ApplyForceToCenter(f, true);
 			}
-			else {
+			else {															//If car takes boost item it will move faster for a set time (BOOST_DURANTION).
 				player->texture = carsTexture[CAR_1_BOOST];
+				//Move the car in the direction it is facing
 				b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 				player->body->body->ApplyForceToCenter(-f, true);
 
-				if (player->cnt == 50) {
+				if (player->cnt == BOOST_DURANTION) {
 					player->accelerate = false;
 					player->cnt = 0;
 				}
 				else player->cnt++;
 			}
 
-			if (IsKeyDown(KEY_A)) player->body->body->ApplyTorque(-CAR_TURN, true);
-			else if (IsKeyDown(KEY_D)) player->body->body->ApplyTorque(CAR_TURN, true);
+			if (IsKeyDown(KEY_A)) player->body->body->ApplyTorque(-CAR_TURN, true);		//Turns the car to the left
+			else if (IsKeyDown(KEY_D)) player->body->body->ApplyTorque(CAR_TURN, true); //Turns the car to the right
 			else {
 				player->AvoidSpin();
 			}
 
-			limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);
+			limitAngularVelocity(player->body->body, MAX_ANGULAR_VELOCITY);				//limit angular velocity to avoid the car turns to fast
 		}
 
 		//Player 2 controls
 		if(player2->lap < 3){ 
 			if (!player2->accelerate) {
-				if (IsKeyPressed(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {
+				if (IsKeyPressed(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {	//Play accelerate sound, need to be keyPressed to avoid wierd sounds
 					App->audio->PlayFx(App->audio->accelerate_fx_2);
 				}
-				if (IsKeyDown(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {
-					vel2 = -2.0f * player2->BOOST;
+				if (IsKeyDown(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {	//Accelerate car like using nitro
+					vel2 = -2.0f * player2->BOOST;									//Multiply car velocity and boost force
 					player2->BOOST_QUANTITY -= 0.1f;
-					limitVelocity(player2->body->body, player2->MAX_VELOCITY + player2->BOOST);
+					limitVelocity(player2->body->body, player2->MAX_VELOCITY + player2->BOOST);	//Increase velocity limit to make the car run faster
 					player2->texture = carsTexture[CAR_2_BOOST];
 				}
 				else {
@@ -830,51 +831,61 @@ update_status ModuleGame::Update()
 					App->audio->StopFx(App->audio->bost_fx_2);
 					App->audio->StopFx(App->audio->accelerate_fx_2);
 
-					if (IsKeyDown(KEY_UP)) vel2 = -CAR_VELOCITY;
-					else if (IsKeyDown(KEY_DOWN)) vel2 = CAR_VELOCITY;
+					if (IsKeyDown(KEY_UP)) vel2 = -CAR_VELOCITY;					//Change vel to move forwards
+					else if (IsKeyDown(KEY_DOWN)) vel2 = CAR_VELOCITY;				//Change vel to move backwards
 					else {
 						vel2 = 0.0f;
-						applyFriction(player2->body->body, FRICTION_COEFFICIENT);
+						applyFriction(player2->body->body, FRICTION_COEFFICIENT);	//Simulates friction to stop the car while it is not accelerating
 						App->audio->StopFx(App->audio->engine_fx_2);
 						App->audio->StopFx(App->audio->in_Reverse_fx_2);
 					}
-					if (IsKeyPressed(KEY_UP)|| player2->firstTime) {
+					if (IsKeyPressed(KEY_UP)|| player2->firstTime) {				//Play engine sound, need to be keyPressed to avoid wierd sounds
 						App->audio->StopFx(App->audio->in_Reverse_fx_2);
 						if (App->audio->PlayFx(App->audio->accelerate_fx_2))	App->audio->StopFx(App->audio->engine_fx_2);
 						else if (!App->audio->PlayFx(App->audio->accelerate_fx_2)) App->audio->PlayFx(App->audio->engine_fx_2);
 						player2->firstTime = false;
 					}
-					else if (IsKeyPressed(KEY_DOWN)) {
+					else if (IsKeyPressed(KEY_DOWN)) {								//Play reverse sound, need to be keyPressed to avoid wierd sounds
 						App->audio->PlayFx(App->audio->in_Reverse_fx_2);
 						App->audio->StopFx(App->audio->engine_fx_2);
 					}
-					limitVelocity(player2->body->body, player2->MAX_VELOCITY);
+					limitVelocity(player2->body->body, player2->MAX_VELOCITY);		//Limit car max velocity 
 				}
+				//Move the car in the direction it is facing
 				b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
 				player2->body->body->ApplyForceToCenter(f2, true);
 			}
-			else
-			{
+			else{																	//If car takes boost item it will move faster for a set time (BOOST_DURANTION).
 				player2->texture = carsTexture[CAR_2_BOOST];
+				//Move the car in the direction it is facing
 				b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, 1.5f));
 				player2->body->body->ApplyForceToCenter(-f2, true);
 
-				if (player2->cnt == 50) {
+				if (player2->cnt == BOOST_DURANTION) {
 					player2->accelerate = false;
 					player2->cnt = 0;
 				}
 				else player2->cnt++;
 			}
 		
-			if (IsKeyDown(KEY_LEFT)) player2->body->body->ApplyTorque(-CAR_TURN, true);
-			else if (IsKeyDown(KEY_RIGHT)) player2->body->body->ApplyTorque(CAR_TURN, true);
+			if (IsKeyDown(KEY_LEFT)) player2->body->body->ApplyTorque(-CAR_TURN, true);		//Turns the car to the left
+			else if (IsKeyDown(KEY_RIGHT)) player2->body->body->ApplyTorque(CAR_TURN, true);//Turns the car to the right
 			else {
 				player2->AvoidSpin();
 			}
+			limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);		//limit angular velocity to avoid the car turns to fast
 		}
 		
-		limitAngularVelocity(player2->body->body, MAX_ANGULAR_VELOCITY);
-		Leader();
+		//Controls on debug mode
+		if (App->physics->debug) {
+			if (IsKeyPressed(KEY_F2)) player->lap++;						//Add one lap to player 1
+			if (IsKeyPressed(KEY_F3)) player2->lap++;						//Add one lap to player 2
+			if (IsKeyPressed(KEY_F4)) player->BOOST_QUANTITY = 20.0F;		//Recover boost quantity to Player 1
+			if (IsKeyPressed(KEY_F5)) player2->BOOST_QUANTITY = 20.0F;		//Recover boost quantity to Player 2
+		}
+		
+		Leader();		//Controls who is leading the race
+		
 		break;
 
 	case END:
@@ -917,21 +928,24 @@ update_status ModuleGame::Update()
 	//UPDATE---------------------
 	obstacles->Update();
 
-	if (state == STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE);
+	if (state == STATE::START)DrawTexture(startLight[currentFrame], 140, 600, WHITE); //Draw start light
 
+	//Draw rectangle to show player 1 boost quantity
 	int rectWidth = player->BOOST_QUANTITY * 20; // Ancho del rectángulo
 	DrawRectangle(rectX, rectY, rectWidth, rectHeight, BEIGE);
 
+	//Draw rectangle to show player 2 boost quantity
 	rectWidth = player2->BOOST_QUANTITY * 20; // Ancho del rectángulo
 	DrawRectangle(rectX + 1200, rectY, rectWidth, rectHeight, LIGHTBROWN);
 
+	//Aply friction to all entities (not cars) like tires to simulate real physics
 	for (int i = 1; i < entitieQ; i++) {
 		applyFriction(entities[i]->body->body, FRICTION_COEFFICIENT);
 		limitAngularVelocity(entities[i]->body->body, 0.0f);
 		entities[i]->Update();
 	}
 
-	if (player->lap < 3)player->Update();
+	if (player->lap < 3)player->Update(); //Makes player 1 disapear when the race is complete
 	else {
 		player->SetPos(0.0f, 0.0f);
 		App->renderer->timer.Restart();
@@ -939,15 +953,13 @@ update_status ModuleGame::Update()
 		App->audio->StopFx(App->audio->bost_fx);
 	}
 
-	if (player2->lap < 3)player2->Update();
+	if (player2->lap < 3)player2->Update();//Makes player 2 disapear when the race is complete
 	else {
 		player2->SetPos(0.0f, 0.0f);
 		App->renderer->timer2.Restart();
 		App->audio->StopFx(App->audio->engine_fx_2);
 		App->audio->StopFx(App->audio->bost_fx_2);
 	}
-	if (IsKeyPressed(KEY_F4)) player->lap++;
-	if (IsKeyPressed(KEY_F5)) player2->lap++;
 
 	if (npc->lap < 3)npc->Update();
 
@@ -997,9 +1009,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 						checkpointStates[i] = true;
 						num_checkpoint = i;
 						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
-						printf("Checkpoint %d passed!\n", i + 1);
 					}
-					else printf("Checkpoint %d ignore!\n", i + 1);
 					break;
 				}
 			}
@@ -1011,9 +1021,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 						checkpointStates2[i] = true;
 						num_checkpoint2 = i;
 						App->audio->PlayFx(App->audio->checkpoint_fx);  // Play checkpoint sound
-						printf("Checkpoint %d passed!\n", i + 1);
 					}
-					else printf("Checkpoint %d ignore!\n", i + 1);
 					break;
 				}
 			}
@@ -1038,20 +1046,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if ((bodyA->id == PLAYER_1) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed) {
 			double lap_time = App->renderer->timer.ReadSec();
 			App->renderer->timer.Restart();
-
 			App->renderer->player1_time = lap_time; //Final time
-			printf("Tiempo player 1 %f", App->renderer->player1_time);
 
-			if (player->lap < 3)
-			{
+			if (player->lap < 3){
 				App->renderer->timer_1[player->lap] = lap_time;
 				App->renderer->timer.Start();
 				player->lap++;
 			}
-			printf("Tiempo player 1 vuelta %d: %f segundos\n", player->lap, lap_time);
-
 			App->renderer->Best_Time();
-
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates.size(); ++i)
@@ -1064,18 +1066,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2) {
 			double lap_time = App->renderer->timer2.ReadSec(); // Tiempo total desde el inicio de la vuelta
 			App->renderer->timer2.Restart();
-
 			App->renderer->player2_time = lap_time;
 
-			if (player2->lap < 3)
-			{
+			if (player2->lap < 3){
 				App->renderer->timer_2[player2->lap] = lap_time;
 				App->renderer->timer2.Start();
 				player2->lap++;
 			}
-			printf("Tiempo player 2 vuelta %d: %f segundos\n", player2->lap, lap_time);
 			App->renderer->Best_Time();
-
 			App->audio->PlayFx(App->audio->finish_line_fx);
 
 			for (int i = 0; i < checkpointStates2.size(); ++i)
@@ -1105,46 +1103,24 @@ void ModuleGame::Leader()
 	else if (player->lap == player2->lap && num_checkpoint < num_checkpoint2) //Numero ckeckpoints
 		App->renderer->first = 2;
 	
-	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2){
-		Vector2 nextCheckpoint = { 0.0f, 0.0f };
-		Vector2 nextCheckpoint2 = { 0.0f, 0.0f };
+	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2){	  //En el caso de que esten en el mismo checkpoint comprueba la distancia recorrida para saber quien va primero
 	
-		nextCheckpoint = checkpointPos[num_checkpoint];
-		nextCheckpoint2 = checkpointPos[num_checkpoint2];
+		Vector2 nextCheckpoint = checkpointPos[num_checkpoint];
+		Vector2 nextCheckpoint2 = checkpointPos[num_checkpoint2];
 
 		b2Vec2 playerPos = player->body->body->GetPosition();
 		b2Vec2 playerPos2 = player2->body->body->GetPosition();
-		float distance_player1 = 0.0f;
-		float distance_player2 = 0.0f;
 
-		distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, nextCheckpoint.x, nextCheckpoint.y);
-		distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, nextCheckpoint2.x, nextCheckpoint2.y);
+		float distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, nextCheckpoint.x, nextCheckpoint.y);		//Distancia recorrida desde el ultimo checkpoint del player 1
+		float distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, nextCheckpoint2.x, nextCheckpoint2.y);	//Distancia recorrida desde el ultimo checkpoint del player 2
 
 		if (num_checkpoint2 != 4 && num_checkpoint2 != 3) {
-			if (distance_player1 < distance_player2)
-			{
-				App->renderer->first = 1;
-				printf("Leder player 1\n");
-
-			}
-			else if (distance_player1 > distance_player2) {
-				App->renderer->first = 2;
-				printf("Leder player 2\n");
-
-			}
+			if (distance_player1 < distance_player2) App->renderer->first = 1;
+			else if (distance_player1 > distance_player2) App->renderer->first = 2;	
 		}
 		else if (num_checkpoint2 == 4 || num_checkpoint2 == 3) {
-			if (distance_player1 > distance_player2)
-			{
-				App->renderer->first = 1;
-				printf("Leder player 1\n");
-
-			}
-			else if (distance_player1 < distance_player2) {
-				App->renderer->first = 2;
-				printf("Leder player 2\n");
-
-			}
+			if (distance_player1 > distance_player2) App->renderer->first = 1;
+			else if (distance_player1 < distance_player2) App->renderer->first = 2;
 		}
 	}
 }
@@ -1155,7 +1131,6 @@ float  ModuleGame::distanceToCheckpoint(float x1, float y1, float x2, float y2) 
 bool ModuleGame::CleanUp()
 {
 	LOG("Unloading Intro scene");
-	int* memoryLeak = DBG_NEW int(1);
 	delete player;
 	delete player2;
 	delete npc;

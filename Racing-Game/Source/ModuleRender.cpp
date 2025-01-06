@@ -60,29 +60,13 @@ void ModuleRender::Musicboard() {
 
     std::string music;
 
-    if (App->audio->current_music_index == 0) 
-    {
-        music = " -- Wind --";
-    }
-    else if (App->audio->current_music_index == 1)
-    {
-        music = "-- Horizon --";
-    }
-    else if (App->audio->current_music_index == 2)
-    {
-        music = "-- Voyage --";
-    }
-    else if (App->audio->current_music_index == 3)
-    {
-        music = "-- Route --";
-    }
-    else if (App->audio->current_music_index == 4)
-    {
-        music = "-- Night --";
-    }
-
+    if (App->audio->current_music_index == 0) music = " -- Wind --";
+    else if (App->audio->current_music_index == 1) music = "-- Horizon --";
+    else if (App->audio->current_music_index == 2) music = "-- Voyage --";
+    else if (App->audio->current_music_index == 3) music = "-- Route --";
+    else if (App->audio->current_music_index == 4) music = "-- Night --";
+    
     DrawText(music.c_str(), 80, 160, myFont, 1, WHITE);
-  
 }
 
 void ModuleRender::Start_game() {
@@ -96,17 +80,16 @@ void ModuleRender::Start_game() {
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.5f, 1.5f, BLACK);
 
     float blinkInterval = 0.5f;  // How often the visibility state changes
-    if (blinkTimer.ReadSec() >= blinkInterval)
-    {
+    if (blinkTimer.ReadSec() >= blinkInterval){
         showText = !showText; // Toggle the visibility state of the text
         blinkTimer.Start();  // Reset the timer
     }
     if (showText) DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
-    
 }
 
 void ModuleRender::End_game() {
 
+    Color WinerText;
     std::string title = "TOTAL TIME";
     std::string play = "CLICK ENTER TO START";
     Vector2 position_play = { 770.0f, 600.0f };
@@ -118,7 +101,7 @@ void ModuleRender::End_game() {
 
     int total_time_P1 = 0;
     int total_time_P2 = 0;
-
+    
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
 
     float blinkInterval = 0.5f;  // How often the visibility state changes
@@ -127,23 +110,26 @@ void ModuleRender::End_game() {
         showText = !showText; // Toggle the visibility state of the text
         blinkTimer.Start();  // Reset the timer
     }
-    if (showText)DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
-    
+    if (showText) {
+        DrawTextEx(myFont, play.c_str(), position_play, myFont.baseSize, 1.0f, BLACK);
+        WinerText = YELLOW;
+    }
+    else WinerText = ORANGE;
 
     for (int i = 0; i < 3; ++i) {
      
-            total_time_P1 += static_cast<int>(timer_1[i]);
-            int minutes = static_cast<int>(timer_1[i] / 60);
-            int seconds = static_cast<int>(timer_1[i]) % 60;
-            int milliseconds = static_cast<int>((timer_1[i] - static_cast<int>(timer_1[i])) * 1000);
+        total_time_P1 += static_cast<int>(timer_1[i]);
+        int minutes = static_cast<int>(timer_1[i] / 60);
+        int seconds = static_cast<int>(timer_1[i]) % 60;
+        int milliseconds = static_cast<int>((timer_1[i] - static_cast<int>(timer_1[i])) * 1000);
 
-            std::string time_text =
-                (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
-                (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
-                (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
+        std::string time_text =
+            (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+            (seconds < 10 ? "0" : "") + std::to_string(seconds) + ":" +
+            (milliseconds < 100 ? "00" : (milliseconds < 10 ? "0" : "")) + std::to_string(milliseconds);
 
-            DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
-                { position_player1.x, position_player1.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
+        DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
+            { position_player1.x, position_player1.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
     }
 
     for (int i = 0; i < 3; ++i) {
@@ -161,8 +147,8 @@ void ModuleRender::End_game() {
         DrawTextEx(myFont, ("Lap " + std::to_string(i + 1) + ": " + time_text).c_str(),
             { position_player2.x, position_player2.y + (i * 50) }, myFont.baseSize, 1.0f, BLACK);
     }
-    if (total_time_P1 < total_time_P2) DrawTextEx(myFont, "PLAYER 1 WINS", position2, myFont.baseSize * 2.0f, 1.5f, BLACK);
-    else DrawTextEx(myFont, "PLAYER 2 WINS", position2, myFont.baseSize * 2.0f, 1.5f, BLACK);
+    if (total_time_P1 < total_time_P2) DrawTextEx(myFont, "PLAYER 1 WINS", position2, myFont.baseSize * 2.0f, 1.5f, WinerText);
+    else DrawTextEx(myFont, "PLAYER 2 WINS", position2, myFont.baseSize * 2.0f, 1.5f, WinerText);
 }
 
 void ModuleRender::Timer_Player1()
