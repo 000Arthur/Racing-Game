@@ -28,6 +28,10 @@ bool ModuleRender::Init()
 {
 	LOG("Creating Renderer context");
     myFont = LoadFont("Assets/Font/SpeedyRegular-7BLoE.ttf");
+    square = LoadTexture("Assets/Square.png");
+    square.height = square.height / 2;
+    square.width = square.width / 2;
+
     if (myFont.baseSize == 0) {
         LOG("Failed to load font.");
         return false;
@@ -47,10 +51,6 @@ update_status ModuleRender::PreUpdate()
 update_status ModuleRender::Update()
 {
     ClearBackground(background);
-
-    // NOTE: This function setups render batching system for
-    // maximum performance, all consecutive Draw() calls are
-    // not processed until EndDrawing() is called
     BeginDrawing();
 
 	return UPDATE_CONTINUE;
@@ -59,7 +59,7 @@ update_status ModuleRender::Update()
 void ModuleRender::Musicboard() {
 
     std::string music;
-
+    //Show the title of the music that is playing
     if (App->audio->current_music_index == 0) music = " -- Wind --";
     else if (App->audio->current_music_index == 1) music = "-- Horizon --";
     else if (App->audio->current_music_index == 2) music = "-- Voyage --";
@@ -70,7 +70,7 @@ void ModuleRender::Musicboard() {
 }
 
 void ModuleRender::Start_game() {
-
+    DrawTexture(square, 590, 380, WHITE);
     std::string title = "RACING ARCADE";
     std::string play = "CLICK ENTER TO START";
 
@@ -78,6 +78,7 @@ void ModuleRender::Start_game() {
     Vector2 position_play = { 720.0f, 600.0f };
 
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.5f, 1.5f, BLACK);
+
 
     float blinkInterval = 0.5f;  // How often the visibility state changes
     if (blinkTimer.ReadSec() >= blinkInterval){

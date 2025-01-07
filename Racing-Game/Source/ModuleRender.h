@@ -47,6 +47,7 @@ public:
 	double player1_time;
 	double player2_time;
 
+	Texture2D square;
 
 	Font myFont;
 
