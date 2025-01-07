@@ -110,7 +110,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 	unsigned int ret = 0;
 
 	Sound sound = LoadSound(path);
-
+	
 	if (sound.stream.buffer == NULL)
 	{
 		LOG("Cannot load sound: %s", path);
@@ -125,16 +125,22 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 }
 
 // Play WAV
-bool ModuleAudio::PlayFx(unsigned int id, int repeat)
+bool ModuleAudio::PlayFx(unsigned int id, bool repeat)
 {
 	if (IsEnabled() == false)
 	{
 		return false;
 	}
-
+	
 	bool ret = false;
 
-	if (id < fx_count) PlaySound(fx[id]);
+	if(!IsSoundPlaying(fx[id]) || repeat){				//With that if the soun it will reproduce again just when the sound finish
+		if (id < fx_count){
+			if (id == burnOut_fx || id == burnOut_fx_2) SetSoundVolume(fx[id], 0.15f);
+			if (id == idle_fx || id == idle_fx_2) SetSoundVolume(fx[id], 0.4f);
+			PlaySound(fx[id]);
+		}
+	}
 
 	return ret;
 }
@@ -151,6 +157,11 @@ void ModuleAudio::SoundsFx()
 	accelerate_fx = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 	accelerate_fx_2 = LoadFx("Assets/Audio/Fx/Accelerating.mp3");
 
+	idle_fx = LoadFx("Assets/Audio/Fx/Idle.mp3");
+	idle_fx_2 = LoadFx("Assets/Audio/Fx/Idle.mp3");
+
+	burnOut_fx = LoadFx("Assets/Audio/Fx/Burnout.mp3");
+	burnOut_fx_2 = LoadFx("Assets/Audio/Fx/Burnout.mp3");
 
 	collision_cars_fx = LoadFx("Assets/Audio/Fx/car crash.mp3");
 
@@ -168,9 +179,6 @@ void ModuleAudio::SoundsFx()
 
 	puddle_fx = LoadFx("Assets/Audio/Fx/puddle.mp3");
 	crack_fx = LoadFx("Assets/Audio/Fx/cracks.mp3");
-
-	bost_fx = LoadFx("Assets/Audio/Fx/bost.wav");
-	bost_fx_2 = LoadFx("Assets/Audio/Fx/bost.wav");
 
 	start_fx = LoadFx("Assets/Audio/Fx/Start.mp3");
 	aplause_fx = LoadFx("Assets/Audio/Fx/aplause.mp3");

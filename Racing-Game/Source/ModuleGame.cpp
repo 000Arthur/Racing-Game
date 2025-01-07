@@ -540,9 +540,9 @@ public:
 	float BOOST_QUANTITY = 20.0F;
 	float BOOST_CNT = 0.0F;
 	float MAX_VELOCITY = 2.0f;
+	float BACK_MAX_VELOCITY = 0.8f;
 
 	bool accelerate = false;
-	bool firstTime = false;
 
 	int cnt = 0;
 	int counter = 0;
@@ -686,7 +686,6 @@ update_status ModuleGame::Update()
 	mouse.x = GetMouseX();
 	mouse.y = GetMouseY();
 	int ray_hit = ray.DistanceTo(mouse);
-
 	App->audio->UpdateMusic();
 
 	switch (state)
@@ -695,13 +694,8 @@ update_status ModuleGame::Update()
 
 		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();			//RADIO
 
-		App->audio->PlayFx(App->audio->aplause_fx);
-		App->audio->PlayFx(App->audio->traffic_light_fx);
-
 		//Stop Sounds
-		App->audio->StopFx(App->audio->bost_fx);
 		App->audio->StopFx(App->audio->accelerate_fx);
-		App->audio->StopFx(App->audio->bost_fx_2);
 		App->audio->StopFx(App->audio->accelerate_fx_2);
 
 		if (IsKeyPressed(KEY_ENTER)) state = STATE::START;
@@ -709,6 +703,8 @@ update_status ModuleGame::Update()
 		break;
 
 	case START:
+		App->audio->PlayFx(App->audio->aplause_fx);
+		App->audio->PlayFx(App->audio->traffic_light_fx);
 
 		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();			//RADIO
 
@@ -726,25 +722,33 @@ update_status ModuleGame::Update()
 		}
 
 		if (IsKeyDown(KEY_W)){
-			player->firstTime = true;
-			//colocar audio de aceleración
+			App->audio->PlayFx(App->audio->burnOut_fx);
+			App->audio->StopFx(App->audio->idle_fx);
 		}
-		else {
-			player->firstTime = false;
+		else App->audio->PlayFx(App->audio->idle_fx);
+		
+		if (IsKeyReleased(KEY_W)) 
+			App->audio->StopFx(App->audio->burnOut_fx);
+		
+		if (IsKeyPressed(KEY_UP)){
+			App->audio->PlayFx(App->audio->burnOut_fx_2);
+			App->audio->StopFx(App->audio->idle_fx_2);
 		}
-
-		if (IsKeyDown(KEY_UP)) {
-			player2->firstTime = true;
-			//colocar audio de aceleración
-		}
-		else {
-			player2->firstTime = false;
-		}
+		else App->audio->PlayFx(App->audio->idle_fx);
+		if (IsKeyReleased(KEY_UP)) 
+			App->audio->StopFx(App->audio->burnOut_fx_2);
 
 		break;
 
 	case IN_GAME:
 		if (IsKeyPressed(KEY_M)) App->audio->ChangeMusic();
+		//Stop all sounds from pre start
+		App->audio->StopFx(App->audio->burnOut_fx);
+		App->audio->StopFx(App->audio->burnOut_fx_2);
+		App->audio->StopFx(App->audio->aplause_fx);
+		App->audio->StopFx(App->audio->traffic_light_fx);
+		App->audio->StopFx(App->audio->idle_fx);
+		App->audio->StopFx(App->audio->idle_fx_2);
 
 		//enemy move
 		pathing(npc, path[npc->counter]);
@@ -752,40 +756,42 @@ update_status ModuleGame::Update()
 		//Player 1 controls
 		if (player->lap < 3){
 			if (!player->accelerate) {
-				if (IsKeyPressed(KEY_SPACE) && player->BOOST_QUANTITY > 0)	//Play accelerate sound, need to be keyPressed to avoid wierd sounds
+				if (IsKeyDown(KEY_SPACE) && player->BOOST_QUANTITY > 0) {	//Accelerate car like using nitro
 					App->audio->PlayFx(App->audio->accelerate_fx);
 
-				if (IsKeyDown(KEY_SPACE) && player->BOOST_QUANTITY > 0) {	//Accelerate car like using nitro
 					vel = -CAR_VELOCITY * player->BOOST;					//Multiply car velocity and boost force
-					player->BOOST_QUANTITY -= 0.1f;							
+					player->BOOST_QUANTITY -= 0.1f;	
+
 					limitVelocity(player->body->body, player->MAX_VELOCITY + player->BOOST); //Increase velocity limit to make the car run faster
 
 					player->texture = carsTexture[CAR_1_BOOST];				
 				}
 				else {
-					App->audio->StopFx(App->audio->bost_fx);
 					App->audio->StopFx(App->audio->accelerate_fx);
 					player->texture = carsTexture[CAR_1_NORMAL];
+	
+					if (IsKeyDown(KEY_W)) {		//Change vel to move forwards
+						vel = -CAR_VELOCITY;
+						App->audio->PlayFx(App->audio->engine_fx);
 
-					if (IsKeyDown(KEY_W)) vel = -CAR_VELOCITY;				//Change vel to move forwards
-					else if (IsKeyDown(KEY_S)) vel = CAR_VELOCITY;			//Change vel to move backwards
+						limitVelocity(player->body->body, player->MAX_VELOCITY);		//Limit car max velocity forwards
+					}
+					else if (IsKeyDown(KEY_S)){	//Change vel to move backwards
+						vel = CAR_VELOCITY;		
+						App->audio->PlayFx(App->audio->in_Reverse_fx);
+
+						limitVelocity(player->body->body, player->BACK_MAX_VELOCITY);		//Limit car max velocity backwards
+					}
 					else {
 						vel = 0.0f;											
-						applyFriction(player->body->body, FRICTION_COEFFICIENT); //Simulates friction to stop the car while it is not accelerating
+						applyFriction(player->body->body, FRICTION_COEFFICIENT);		//Simulates friction to stop the car while it is not accelerating
 						App->audio->StopFx(App->audio->engine_fx);
 						App->audio->StopFx(App->audio->in_Reverse_fx);
 					}
-					if (IsKeyPressed(KEY_W) || player->firstTime) {			//Play engine sound, need to be keyPressed to avoid wierd sounds
-						App->audio->StopFx(App->audio->in_Reverse_fx);
-						if (App->audio->PlayFx(App->audio->accelerate_fx))	App->audio->StopFx(App->audio->engine_fx);
-						else if (!App->audio->PlayFx(App->audio->accelerate_fx)) App->audio->PlayFx(App->audio->engine_fx);
-						player->firstTime = false;
-					}
-					else if (IsKeyPressed(KEY_S)) {							//Play reverse sound, need to be keyPressed to avoid wierd sounds
-						App->audio->PlayFx(App->audio->in_Reverse_fx);
-						App->audio->StopFx(App->audio->engine_fx);
-					}
-					limitVelocity(player->body->body, player->MAX_VELOCITY);//Limit car max velocity 
+
+					if (IsKeyReleased(KEY_W))App->audio->StopFx(App->audio->engine_fx);
+					if (IsKeyReleased(KEY_S))App->audio->StopFx(App->audio->in_Reverse_fx);
+
 				}
 				//Move the car in the direction it is facing
 				b2Vec2 f = player->body->body->GetWorldVector(b2Vec2(0.0f, vel)); 
@@ -816,40 +822,37 @@ update_status ModuleGame::Update()
 		//Player 2 controls
 		if(player2->lap < 3){ 
 			if (!player2->accelerate) {
-				if (IsKeyPressed(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {	//Play accelerate sound, need to be keyPressed to avoid wierd sounds
-					App->audio->PlayFx(App->audio->accelerate_fx_2);
-				}
 				if (IsKeyDown(KEY_RIGHT_SHIFT) && player2->BOOST_QUANTITY > 0) {	//Accelerate car like using nitro
+					App->audio->PlayFx(App->audio->accelerate_fx_2);
+
 					vel2 = -2.0f * player2->BOOST;									//Multiply car velocity and boost force
 					player2->BOOST_QUANTITY -= 0.1f;
+
 					limitVelocity(player2->body->body, player2->MAX_VELOCITY + player2->BOOST);	//Increase velocity limit to make the car run faster
 					player2->texture = carsTexture[CAR_2_BOOST];
 				}
 				else {
+					App->audio->StopFx(App->audio->accelerate_fx_2);
 					player2->texture = carsTexture[CAR_2_NORMAL];
 
-					App->audio->StopFx(App->audio->bost_fx_2);
-					App->audio->StopFx(App->audio->accelerate_fx_2);
+					if (IsKeyDown(KEY_UP)){				//Change vel to move forwards
+						vel2 = -CAR_VELOCITY;
+						App->audio->PlayFx(App->audio->engine_fx_2);
+						limitVelocity(player2->body->body, player2->MAX_VELOCITY);		//Limit car max velocity forwards
 
-					if (IsKeyDown(KEY_UP)) vel2 = -CAR_VELOCITY;					//Change vel to move forwards
-					else if (IsKeyDown(KEY_DOWN)) vel2 = CAR_VELOCITY;				//Change vel to move backwards
+					}
+					else if (IsKeyDown(KEY_DOWN)){		//Change vel to move backwards
+						vel2 = CAR_VELOCITY;				
+						App->audio->PlayFx(App->audio->in_Reverse_fx_2);
+						limitVelocity(player2->body->body, player2->BACK_MAX_VELOCITY);						//Limit car max velocity backwards
+					}
 					else {
 						vel2 = 0.0f;
-						applyFriction(player2->body->body, FRICTION_COEFFICIENT);	//Simulates friction to stop the car while it is not accelerating
-						App->audio->StopFx(App->audio->engine_fx_2);
-						App->audio->StopFx(App->audio->in_Reverse_fx_2);
+						applyFriction(player2->body->body, FRICTION_COEFFICIENT);		//Simulates friction to stop the car while it is not accelerating
 					}
-					if (IsKeyPressed(KEY_UP)|| player2->firstTime) {				//Play engine sound, need to be keyPressed to avoid wierd sounds
-						App->audio->StopFx(App->audio->in_Reverse_fx_2);
-						if (App->audio->PlayFx(App->audio->accelerate_fx_2))	App->audio->StopFx(App->audio->engine_fx_2);
-						else if (!App->audio->PlayFx(App->audio->accelerate_fx_2)) App->audio->PlayFx(App->audio->engine_fx_2);
-						player2->firstTime = false;
-					}
-					else if (IsKeyPressed(KEY_DOWN)) {								//Play reverse sound, need to be keyPressed to avoid wierd sounds
-						App->audio->PlayFx(App->audio->in_Reverse_fx_2);
-						App->audio->StopFx(App->audio->engine_fx_2);
-					}
-					limitVelocity(player2->body->body, player2->MAX_VELOCITY);		//Limit car max velocity 
+					if (IsKeyReleased(KEY_UP)) App->audio->StopFx(App->audio->engine_fx_2);
+					if (IsKeyReleased(KEY_DOWN)) App->audio->StopFx(App->audio->in_Reverse_fx_2);
+
 				}
 				//Move the car in the direction it is facing
 				b2Vec2 f2 = player2->body->body->GetWorldVector(b2Vec2(0.0f, vel2));
@@ -950,7 +953,6 @@ update_status ModuleGame::Update()
 		player->SetPos(0.0f, 0.0f);
 		App->renderer->timer.Restart();
 		App->audio->StopFx(App->audio->engine_fx);
-		App->audio->StopFx(App->audio->bost_fx);
 	}
 
 	if (player2->lap < 3)player2->Update();//Makes player 2 disapear when the race is complete
@@ -958,7 +960,6 @@ update_status ModuleGame::Update()
 		player2->SetPos(0.0f, 0.0f);
 		App->renderer->timer2.Restart();
 		App->audio->StopFx(App->audio->engine_fx_2);
-		App->audio->StopFx(App->audio->bost_fx_2);
 	}
 
 	if (npc->lap < 3)npc->Update();
@@ -970,8 +971,8 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	if (bodyA != nullptr && bodyB != nullptr)
 	{
-		if (bodyA->id == PLAYER_1 && bodyB->id == SPEED_BOOST) player->accelerate = true; App->audio->PlayFx(App->audio->bost_fx);
-		if (bodyA->id == PLAYER_2 && bodyB->id == SPEED_BOOST) player2->accelerate = true; App->audio->PlayFx(App->audio->bost_fx_2);
+		if (bodyA->id == PLAYER_1 && bodyB->id == SPEED_BOOST) player->accelerate = true; 
+		if (bodyA->id == PLAYER_2 && bodyB->id == SPEED_BOOST) player2->accelerate = true;
 
 		if (bodyA->id == PLAYER_1 && bodyB->id == NITRO_BOOST)
 			if (player->BOOST_QUANTITY < BOOST_RECOVER)player->BOOST_QUANTITY = BOOST_RECOVER;
@@ -981,10 +982,10 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		// Detect collision between cars or a wall:
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == PLAYER_1 || bodyB->id == PLAYER_2 || bodyB->id == HIT))
-			App->audio->PlayFx(App->audio->collision_cars_fx);
+			App->audio->PlayFx(App->audio->collision_cars_fx, true);
 
 		//Check if a car collides with a wheels wall
-		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == TIRE)) App->audio->PlayFx(App->audio->collision_object_fx);
+		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == TIRE)) App->audio->PlayFx(App->audio->collision_object_fx,true);
 
 		//puddle
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == PUDDLE)) App->audio->PlayFx(App->audio->puddle_fx);

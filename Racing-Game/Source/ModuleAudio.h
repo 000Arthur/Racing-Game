@@ -23,16 +23,22 @@ public:
 	unsigned int LoadFx(const char* path);
 
 	// Play a previously loaded sound
-	bool PlayFx(unsigned int fx, int repeat = 0);
-
+	bool PlayFx(unsigned int fx, bool repeat = false);
 	void StopFx(unsigned int fx_id);
 	void SoundsFx();
+
 	void UpdateMusic();
 	void ChangeMusic();
 
 	unsigned int start_fx;
 	unsigned int aplause_fx;
 	unsigned int traffic_light_fx;
+
+	unsigned int idle_fx;
+	unsigned int idle_fx_2;
+
+	unsigned int burnOut_fx;
+	unsigned int burnOut_fx_2;
 
 	unsigned int accelerate_fx;
 	unsigned int accelerate_fx_2;
@@ -52,8 +58,6 @@ public:
 	unsigned int puddle_fx;
 	unsigned int crack_fx;
 
-	unsigned int bost_fx;
-	unsigned int bost_fx_2;
 
 	//List music
 	int current_music_index = -1;
