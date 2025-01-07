@@ -29,8 +29,7 @@ bool ModuleRender::Init()
 	LOG("Creating Renderer context");
     myFont = LoadFont("Assets/Font/SpeedyRegular-7BLoE.ttf");
     square = LoadTexture("Assets/Square.png");
-    square.height = square.height / 2;
-    square.width = square.width / 2;
+    square.height = square.height / 3;
 
     if (myFont.baseSize == 0) {
         LOG("Failed to load font.");
@@ -70,7 +69,7 @@ void ModuleRender::Musicboard() {
 }
 
 void ModuleRender::Start_game() {
-    DrawTexture(square, 590, 380, WHITE);
+    DrawTexture(square, 0, 440, WHITE);
     std::string title = "RACING ARCADE";
     std::string play = "CLICK ENTER TO START";
 
