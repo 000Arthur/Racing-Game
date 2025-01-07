@@ -66,7 +66,7 @@ void ModuleRender::Musicboard() {
     else if (App->audio->current_music_index == 3) music = "-- Route --";
     else if (App->audio->current_music_index == 4) music = "-- Night --";
     
-    DrawText(music.c_str(), 80, 160, myFont, 1, WHITE);
+    DrawText(music.c_str(), 35, 137, myFont, 1, LIGHTGRAY);
 }
 
 void ModuleRender::Start_game() {
@@ -223,6 +223,13 @@ void ModuleRender::Best_Time()
     DrawText(time_text.c_str(), 770, 50, myFont, 1, BLACK);
 }
 
+void ModuleRender::Nitro()
+{
+    std::string nitro_text = "NITRO";
+    DrawText(nitro_text.c_str(), 80, 92, myFont, 1, BEIGE);
+    DrawText(nitro_text.c_str(), 1280, 92, myFont, 1, LIGHTBROWN);
+}
+
 void ModuleRender::Leaderboard()
 {
     std::string first_text;
@@ -237,8 +244,8 @@ void ModuleRender::Leaderboard()
         second_text = "Player 1";
     }
 
-    DrawText(first_text.c_str(), 1400, 200, myFont, 1, WHITE);
-    DrawText(second_text.c_str(), 1400, 250, myFont, 1, WHITE);
+    DrawText(first_text.c_str(), 1460, 145, myFont, 1, LIGHTGRAY);
+    DrawText(second_text.c_str(), 1480, 205, myFont, 1, LIGHTGRAY);
 }
 // PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
@@ -262,6 +269,8 @@ update_status ModuleRender::PostUpdate()
     Timer_Player2();
 
     Best_Time();
+
+    Nitro();
 
     Leaderboard();
     
