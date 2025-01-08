@@ -58,6 +58,9 @@ public:
 	unsigned int puddle_fx;
 	unsigned int crack_fx;
 
+	unsigned int takeNitro_fx;
+	unsigned int takeNitro_fx_2;
+
 
 	//List music
 	int current_music_index = -1;

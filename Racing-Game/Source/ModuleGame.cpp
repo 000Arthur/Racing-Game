@@ -624,6 +624,7 @@ bool ModuleGame::Start()
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
 
+	//state = STATE::END;
 	return ret;
 }
 
@@ -975,10 +976,16 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA->id == PLAYER_2 && bodyB->id == SPEED_BOOST) player2->accelerate = true;
 
 		if (bodyA->id == PLAYER_1 && bodyB->id == NITRO_BOOST)
-			if (player->BOOST_QUANTITY < BOOST_RECOVER)player->BOOST_QUANTITY = BOOST_RECOVER;
+			if (player->BOOST_QUANTITY < BOOST_RECOVER){
+				player->BOOST_QUANTITY = BOOST_RECOVER;
+				App->audio->PlayFx(App->audio->takeNitro_fx, false);
+			}
 
 		if (bodyA->id == 2 && bodyB->id == NITRO_BOOST)
-			if (player2->BOOST_QUANTITY < BOOST_RECOVER)player2->BOOST_QUANTITY = BOOST_RECOVER;
+			if (player2->BOOST_QUANTITY < BOOST_RECOVER){
+				player2->BOOST_QUANTITY = BOOST_RECOVER;
+				App->audio->PlayFx(App->audio->takeNitro_fx, false);
+			}
 
 		// Detect collision between cars or a wall:
 		if ((bodyA->id == PLAYER_1 || bodyA->id == PLAYER_2) && (bodyB->id == PLAYER_1 || bodyB->id == PLAYER_2 || bodyB->id == HIT))

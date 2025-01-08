@@ -31,6 +31,9 @@ bool ModuleRender::Init()
     square = LoadTexture("Assets/Square.png");
     square.height = square.height / 3;
 
+    square2 = LoadTexture("Assets/Square.png");
+
+
     if (myFont.baseSize == 0) {
         LOG("Failed to load font.");
         return false;
@@ -101,6 +104,8 @@ void ModuleRender::End_game() {
 
     int total_time_P1 = 0;
     int total_time_P2 = 0;
+
+    DrawTexture(square2, 220, 180, WHITE);
     
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
 

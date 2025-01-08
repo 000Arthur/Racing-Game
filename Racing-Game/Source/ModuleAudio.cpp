@@ -182,5 +182,10 @@ void ModuleAudio::SoundsFx()
 
 	start_fx = LoadFx("Assets/Audio/Fx/Start.mp3");
 	aplause_fx = LoadFx("Assets/Audio/Fx/aplause.mp3");
+
+	takeNitro_fx = LoadFx("Assets/Audio/Fx/take nitro.mp3");
+	takeNitro_fx_2 = LoadFx("Assets/Audio/Fx/take nitro.mp3");
+
+
 	traffic_light_fx = LoadFx("Assets/Audio/Fx/traffic light.mp3");
 }

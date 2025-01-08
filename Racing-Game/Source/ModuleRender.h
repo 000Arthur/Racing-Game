@@ -48,6 +48,8 @@ public:
 	double player2_time;
 
 	Texture2D square;
+	Texture2D square2;
+
 
 	Font myFont;
 
