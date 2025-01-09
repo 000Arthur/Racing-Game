@@ -29,9 +29,7 @@ bool ModuleRender::Init()
 	LOG("Creating Renderer context");
     myFont = LoadFont("Assets/Font/SpeedyRegular-7BLoE.ttf");
     square = LoadTexture("Assets/Square.png");
-    square.height = square.height / 3;
-
-    square2 = LoadTexture("Assets/Square.png");
+    square2 = LoadTexture("Assets/Square2.png");
 
 
     if (myFont.baseSize == 0) {
@@ -105,7 +103,7 @@ void ModuleRender::End_game() {
     int total_time_P1 = 0;
     int total_time_P2 = 0;
 
-    DrawTexture(square2, 220, 180, WHITE);
+    DrawTexture(square2, 590, 160, WHITE);
     
     DrawTextEx(myFont, title.c_str(), position, myFont.baseSize * 2.0f, 1.5f, BLACK);
 
