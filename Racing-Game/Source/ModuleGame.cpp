@@ -571,8 +571,8 @@ bool ModuleGame::Start()
 	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
 
-	App->audio->PlayMusic(App->audio->music_paths[0], 1.0f);
-	App->audio->current_music_index = 0;
+	App->audio->PlayMusic(App->audio->music_paths[1], 1.0f);
+	App->audio->current_music_index = 1;
 
 	App->audio->PlayFx(App->audio->start_fx);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
@@ -976,15 +976,17 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA->id == PLAYER_2 && bodyB->id == SPEED_BOOST) player2->accelerate = true;
 
 		if (bodyA->id == PLAYER_1 && bodyB->id == NITRO_BOOST)
-			if (player->BOOST_QUANTITY < BOOST_RECOVER){
-				player->BOOST_QUANTITY = BOOST_RECOVER;
+			if (player->BOOST_QUANTITY < MAX_BOOST_QUANTITY){
+				player->BOOST_QUANTITY += BOOST_RECOVER;
+				if (player->BOOST_QUANTITY > MAX_BOOST_QUANTITY) player->BOOST_QUANTITY = MAX_BOOST_QUANTITY;
 				App->audio->PlayFx(App->audio->takeNitro_fx, false);
 			}
 
 		if (bodyA->id == 2 && bodyB->id == NITRO_BOOST)
-			if (player2->BOOST_QUANTITY < BOOST_RECOVER){
-				player2->BOOST_QUANTITY = BOOST_RECOVER;
-				App->audio->PlayFx(App->audio->takeNitro_fx, false);
+			if (player2->BOOST_QUANTITY < MAX_BOOST_QUANTITY) {
+				player2->BOOST_QUANTITY += BOOST_RECOVER;
+				if (player2->BOOST_QUANTITY > MAX_BOOST_QUANTITY) player2->BOOST_QUANTITY = MAX_BOOST_QUANTITY;
+				App->audio->PlayFx(App->audio->takeNitro_fx_2, false);
 			}
 
 		// Detect collision between cars or a wall:
@@ -1099,6 +1101,9 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 void ModuleGame::Leader()
 {
+	App->renderer->lapP1 = player->lap;
+	App->renderer->lapP2 = player2->lap;
+
 	if (player->lap > player2->lap) //Numero de vueltas
 		App->renderer->first = 1;
 	

@@ -75,7 +75,8 @@ public:
 
 	const float MAX_ANGULAR_VELOCITY = 1.0f;
 	const int BOOST_DURANTION = 50;
-	const float BOOST_RECOVER = 10.0f;
+	const float BOOST_RECOVER = 8.0f;
+	const float MAX_BOOST_QUANTITY = 20.0f;
 
 	const float CAR_VELOCITY = 2.0f;
 	const float CAR_TURN = 0.2F;

@@ -31,7 +31,6 @@ bool ModuleRender::Init()
     square = LoadTexture("Assets/Square.png");
     square2 = LoadTexture("Assets/Square2.png");
 
-
     if (myFont.baseSize == 0) {
         LOG("Failed to load font.");
         return false;
@@ -239,12 +238,12 @@ void ModuleRender::Leaderboard()
     std::string second_text;
 
     if (first == 1) {
-        first_text = "Player 1";
-        second_text = "Player 2";
+        first_text = "Player 1  Lap:"+ std::to_string(lapP1);
+        second_text = "Player 2  Lap:" + std::to_string(lapP2);
     }
     else if (first == 2) {
-        first_text = "Player 2";
-        second_text = "Player 1";
+        first_text = "Player 2  Lap:" + std::to_string(lapP2);
+        second_text = "Player 1  Lap:" + std::to_string(lapP1);
     }
 
     DrawText(first_text.c_str(), 1460, 145, myFont, 1, LIGHTGRAY);

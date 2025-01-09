@@ -33,6 +33,9 @@ public:
 public:
 
 	int first = 1;
+	int lapP1 = 0;
+	int lapP2 = 0;
+
 	float timer_1[3];
 	float timer_2[3];
 
@@ -49,7 +52,6 @@ public:
 
 	Texture2D square;
 	Texture2D square2;
-
 
 	Font myFont;
 
