@@ -1,10 +1,15 @@
 # Racing Game
+
+# Students inbolved: Joel Vicente, Arthur Cordoba, Jana Puig and Albert Bailen
 **Github project page**: https://github.com/000Arthur/Racing-Game
+
+**Link to original the game**: https://store.steampowered.com/app/355010/Race_Arcade/ 
 
 ## Installation
 **_Unzip the [RELEASE FOLDER](https://github.com/000Arthur/Racing-Game/releases) and execute the .exe file_**
 
 ## Game Controls
+     *Change music = M
 ### Controls Player 1
      * Move Car = WASD
      * Nitro = SPACE
