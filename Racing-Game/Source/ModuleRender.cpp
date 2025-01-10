@@ -203,8 +203,8 @@ void ModuleRender::Best_Time()
 {
     int minutes = 0, seconds = 0, milliseconds = 0;
     static double best_time = 1000000; 
-    // Comparar los tiempos cada vez que los jugadores finalizan una vuelta
-    if (player1_time > 0 && player1_time < best_time) best_time = player1_time;
+    
+    if (player1_time > 0 && player1_time < best_time) best_time = player1_time; //Compare times each time players finish a lap
     
     if (player2_time > 0 && player2_time < best_time) best_time = player2_time;
 

@@ -378,7 +378,7 @@ public:
 
 private:
 	Texture2D texture;
-	std::vector<PhysBody*> bodies; // Vector para almacenar los objetos
+	std::vector<PhysBody*> bodies; 
 
 
 	void CreateChain(ModulePhysics* physics, const int* circuit, int size, int _x, int _y, int i)
@@ -557,8 +557,8 @@ bool ModuleGame::Start()
 	checkpointStates2.resize(checkpointPos.size(), false); //Player 2
 	App->audio->SoundsFx();
 
-	App->audio->PlayMusic(App->audio->music_paths[1], 1.0f);
-	App->audio->current_music_index = 1;
+	App->audio->PlayMusic(App->audio->music_paths[0], 1.0f);
+	App->audio->current_music_index = 0;
 
 	App->audio->PlayFx(App->audio->start_fx);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
@@ -597,8 +597,8 @@ bool ModuleGame::Start()
 		else actualTire++;
 	}
 	for (int i = 0; i < 6; ++i) {
-		if (i < 3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, speedBoost, SPEED_BOOST));// poner enum y no 3
-		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, nitroBoost, NITRO_BOOST));// poner enum y no 3
+		if (i < 3)entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, speedBoost, SPEED_BOOST));
+		else entities.push_back(new Bost(App->physics, BostersPos[i].x, BostersPos[i].y, this, nitroBoost, NITRO_BOOST));
 	}
 
 	entities.push_back(new InteractEntity(App->physics, 193, 686, this, tires[1], 126, 17, FINISH_LINE));
@@ -610,7 +610,6 @@ bool ModuleGame::Start()
 	for (int i = 0; i < 3; i++)
 		entities.push_back(new Crack(App->physics, crackpointPos[i].x, crackpointPos[i].y, this, tires[1], CRACK));
 
-	//state = STATE::END;
 	return ret;
 }
 
@@ -619,16 +618,15 @@ void limitVelocity(b2Body* body, float maxSpeed) {
 	float speed = velocity.Length();
 
 	if (speed > maxSpeed) {
-		velocity *= maxSpeed / speed; // Reduce proporcionalmente x e y
-		body->SetLinearVelocity(velocity); // Asigna la velocidad ajustada
+		velocity *= maxSpeed / speed; // Proportionally reduce x and y
+		body->SetLinearVelocity(velocity); // Assigns the set speed
 	}
 }
 void limitAngularVelocity(b2Body* body, float maxAngularVelocity) {
 	float angularVelocity = body->GetAngularVelocity();
 
-	if (fabs(angularVelocity) > maxAngularVelocity) {
-		// Clampear la velocidad angular al rango permitido
-		angularVelocity = (angularVelocity > 0 ? maxAngularVelocity : -maxAngularVelocity);
+	if (fabs(angularVelocity) > maxAngularVelocity) {		
+		angularVelocity = (angularVelocity > 0 ? maxAngularVelocity : -maxAngularVelocity);		//Clamp angular velocity to allowable range
 		body->SetAngularVelocity(angularVelocity);
 	}
 }
@@ -640,8 +638,8 @@ void applyFriction(b2Body* body, float frictionCoefficient) {
 		return;
 	}
 	
-	b2Vec2 frictionForce = -velocity;		 // Dirección opuesta al movimiento
-	frictionForce *= frictionCoefficient;		 // Ajusta según el coeficiente de fricción
+	b2Vec2 frictionForce = -velocity;		 //Opposite direction of movement
+	frictionForce *= frictionCoefficient;		 // Adjust according to the coefficient of friction
 	body->ApplyForceToCenter(frictionForce, true);
 }
 
@@ -704,6 +702,7 @@ update_status ModuleGame::Update()
 			if (currentFrame < 5)currentFrame++;
 			else {
 				currentFrame = 0;
+				App->audio->ChangeMusic();
 				state = STATE::IN_GAME;
 			}
 		}
@@ -1060,7 +1059,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 
 		if ((bodyA->id == PLAYER_2) && (bodyB->id == FINISH_LINE) && allCheckpointsPassed2) {
-			double lap_time = App->renderer->timer2.ReadSec(); // Tiempo total desde el inicio de la vuelta
+			double lap_time = App->renderer->timer2.ReadSec(); // Total time since lap start
 			App->renderer->timer2.Restart();
 			App->renderer->player2_time = lap_time;
 
@@ -1090,19 +1089,19 @@ void ModuleGame::Leader()
 	App->renderer->lapP1 = player->lap;
 	App->renderer->lapP2 = player2->lap;
 
-	if (player->lap > player2->lap) //Numero de vueltas
+	if (player->lap > player2->lap)		//Check which player has the most laps to decide who will go first
 		App->renderer->first = 1;
 	
 	else if (player->lap < player2->lap)
 		App->renderer->first = 2;
 	
-	else if (player->lap == player2->lap && num_checkpoint > num_checkpoint2) //Numero ckeckpoints
+	else if (player->lap == player2->lap && num_checkpoint > num_checkpoint2)		//Check which player has the most checkpoints to decide who will go first
 		App->renderer->first = 1;
 	
-	else if (player->lap == player2->lap && num_checkpoint < num_checkpoint2) //Numero ckeckpoints
+	else if (player->lap == player2->lap && num_checkpoint < num_checkpoint2) 
 		App->renderer->first = 2;
 	
-	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2){	  //En el caso de que esten en el mismo checkpoint comprueba la distancia recorrida para saber quien va primero
+	if (player->lap == player2->lap && num_checkpoint == num_checkpoint2){			//If they are at the same checkpoint, check the distance traveled to know who goes first
 	
 		Vector2 nextCheckpoint = checkpointPos[num_checkpoint];
 		Vector2 nextCheckpoint2 = checkpointPos[num_checkpoint2];
@@ -1110,8 +1109,8 @@ void ModuleGame::Leader()
 		b2Vec2 playerPos = player->body->body->GetPosition();
 		b2Vec2 playerPos2 = player2->body->body->GetPosition();
 
-		float distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, nextCheckpoint.x, nextCheckpoint.y);		//Distancia recorrida desde el ultimo checkpoint del player 1
-		float distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, nextCheckpoint2.x, nextCheckpoint2.y);	//Distancia recorrida desde el ultimo checkpoint del player 2
+		float distance_player1 = distanceToCheckpoint(playerPos.x, playerPos.y, nextCheckpoint.x, nextCheckpoint.y);		//Distance traveled from the last checkpoint of player 1
+		float distance_player2 = distanceToCheckpoint(playerPos2.x, playerPos2.y, nextCheckpoint2.x, nextCheckpoint2.y);	//Distance traveled from the last checkpoint of player 2
 
 		if (num_checkpoint2 != 4 && num_checkpoint2 != 3) {
 			if (distance_player1 < distance_player2) App->renderer->first = 1;
@@ -1123,7 +1122,7 @@ void ModuleGame::Leader()
 		}
 	}
 }
-float  ModuleGame::distanceToCheckpoint(float x1, float y1, float x2, float y2) { //Calcular distancia entre dos puntos
+float  ModuleGame::distanceToCheckpoint(float x1, float y1, float x2, float y2) { //Calculate distance between two points
 	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
