@@ -290,6 +290,9 @@ bool ModuleRender::CleanUp()
     timer.Stop();
 
     UnloadFont(myFont);
+    UnloadTexture(square);
+    UnloadTexture(square2);
+
 	return true;
 }
 

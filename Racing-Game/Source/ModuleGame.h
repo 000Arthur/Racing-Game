@@ -64,7 +64,6 @@ public:
 	int currentFrame = 0;
 	float frameTime = 1.0f;   // Duración de cada frame en segundos
 	float timer = 0.0f;
-	Texture2D frames[6];
 
 	float vel = 0.0f;
 	float vel2 = 0.0f;
@@ -80,8 +79,6 @@ public:
 
 	const float CAR_VELOCITY = 2.0f;
 	const float CAR_TURN = 0.2F;
-
-	unsigned int accelerate_fx_id = 0;
 
 	int rectX = 200; // Posición X
 	int rectY = 100; // Posición Y

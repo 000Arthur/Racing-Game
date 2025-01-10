@@ -1133,6 +1133,14 @@ float  ModuleGame::distanceToCheckpoint(float x1, float y1, float x2, float y2) 
 bool ModuleGame::CleanUp()
 {
 	LOG("Unloading Intro scene");
+
+	UnloadTexture(speedBoost);
+	UnloadTexture(nitroBoost);
+	UnloadTexture(circuit);
+	for (int z = 0;z < 3;z++) UnloadTexture(tires[z]);
+	for (int z = 0;z < 6;z++) UnloadTexture(carsTexture[z]);
+	for (int z = 0;z < 6;z++) UnloadTexture(startLight[z]);
+
 	delete player;
 	delete player2;
 	delete npc;
@@ -1140,6 +1148,7 @@ bool ModuleGame::CleanUp()
 
 	for (int i = 1; i < entitieQ; i++) 
 		delete entities[i];
+
 
 	return true;
 }
