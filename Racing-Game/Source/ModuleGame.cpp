@@ -939,6 +939,8 @@ update_status ModuleGame::Update()
 		player->SetPos(0.0f, 0.0f);
 		App->renderer->timer.Restart();
 		App->audio->StopFx(App->audio->engine_fx);
+		App->audio->StopFx(App->audio->accelerate_fx);
+
 	}
 
 	if (player2->lap < 3)player2->Update();//Makes player 2 disapear when the race is complete
@@ -946,6 +948,8 @@ update_status ModuleGame::Update()
 		player2->SetPos(0.0f, 0.0f);
 		App->renderer->timer2.Restart();
 		App->audio->StopFx(App->audio->engine_fx_2);
+		App->audio->StopFx(App->audio->accelerate_fx_2);
+
 	}
 
 	if (npc->lap < 3)npc->Update();
